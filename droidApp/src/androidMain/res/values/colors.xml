@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="launcher_background">#FFFFFF</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="bg">#FFF9F9FA</color>
+    <color name="BlueColor">#1989FC</color>
+    <color name="BlueColor2">#E1F0FF</color>
+    <color name="LabelColor">#353535</color>
+    <color name="SecondaryLabelColor">#FFAEAEAE</color>
+    <color name="OnlineColor">#74E020</color>
+    <color name="FacebookBlue">#4267B2</color>
+    <color name="SecondaryGradient">#7644ad</color>
+    <color name="Secondary">#d54381</color>
+    <color name="LightYellow">#FCF8E3</color>
+    <color name="LightYellow2">#FBEDD2</color>
+    <color name="green2">#52C27B</color>
+    <color name="green3">#52C27B</color>
+    <color name="green4">#0B8902</color>
+    <color name="lastMsgColor">#FF9CA5AE</color>
+    <color name="darkRedColor">#d0424f</color>
+    <color name="titleStateColor">#FFAAAAAA</color>
+    <color name="chatEditTextBgColor">#FFEEEEEE</color>
+    <color name="allowedColor">#64CB75</color>
+    <color name="notallowedColor">#FF7C7C</color>
+
+    <color name="toastSuccess">#FF196319</color>
+    <color name="toastError">#FFA01E1E</color>
+    <color name="toastWarning">#FF9A7302</color>
+    <color name="toastinfo">#52C27B</color>
+
+    <color name="Gray100">#f6f7f8</color>
+    <color name="Gray200">#ebecef</color>
+    <color name="Gray250">#D9DCE1</color>
+    <color name="Gray300">#ced2d9</color>
+    <color name="Gray400">#b2b8c2</color>
+    <color name="Gray500">#959eac</color>
+    <color name="Gray600">#788396</color>
+    <color name="Gray700">#606a7b</color>
+    <color name="Gray800">#4a515e</color>
+    <color name="Gray900">#22262e</color>
+
+    <color name="splashColor">#151822</color>
+
+    <color name="MyMessageColor">#FFDAECFF</color>
+    <color name="MyMessageColorPressed">#FFB4C8E6</color>
+    <color name="myReadStatusColor">#3E6A98</color>
+    <color name="myUrlColor">#275482</color>
+    <color name="myTextColor">#101010</color>
+    <color name="OtherMessageColor">#FFFFFFFF</color>
+    <color name="OtherMessageColorPressed">#FFF0F0F0</color>
+    <color name="splash_background">#ffffff</color>
+    <color name="MediaSelected">#1A000000</color>
+
+    <color name="linkColor">#567cd7</color>
+    <color name="linkColorPressed">#FF29427E</color>
+
+    <color name="decryptErrorText">#FF8A8A8A</color>
+
+    <color name="MyReplyBgColor">#FF618CBF</color>
+    <color name="MyReplyBorderColor">#FF2C62A4</color>
+
+    <color name="kybyteColo1">#FF853CD9</color>
+    <color name="kybyteColo2">#FFDA70D3</color>
+    <color name="kybyteColo1Pressed">#FF521D8E</color>
+    <color name="kybyteColo2Pressed">#FF712B6C</color>
+    <color name="payedKybyteColo1">#144B84</color>
+    <color name="payedKybyteColo2">#1989FC</color>
+    <color name="payedKybyteColo1Pressed">#FF0C2D4F</color>
+    <color name="payedKybyteColo2Pressed">#FF1C70C5</color>
+    <color name="holo_red_light">#ff4444</color>
+    <color name="msgDateColor">#66353535</color>
+    <color name="faqIconColor">#823ADD</color>
+    <color name="holo_orange">#ffff8800</color>
+
+    <color name="filterBgSelectedColor">#F9FCFF</color>
+    <color name="filterBorderNormalColor">#ABABAB</color>
+    <color name="filterTextNormalColor">#202020</color>
+</resources>

@@ -1,0 +1,18 @@
+<resources>
+	<dimen name="fab_margin">16dp</dimen>
+
+	<dimen name="pageHeaderTopPadding">0dp</dimen>
+	<dimen name="pageHeaderHeight">65dp</dimen>
+	<dimen name="pageHeaderHPadding">5dp</dimen>
+	<dimen name="pageHPadding">20dp</dimen>
+	<dimen name="pageVPadding">10dp</dimen>
+
+	<dimen name="labelsSpacing">10dp</dimen>
+
+	<dimen name="side_menu_button_height">60dp</dimen>
+	<dimen name="side_menu_button_icon_size">25dp</dimen>
+	<dimen name="side_menu_button_text_size">18sp</dimen>
+	<dimen name="side_menu_button_icon_text_spacing">12dp</dimen>
+	<dimen name="side_menu_button_icon_text_top_margin">3dp</dimen>
+	<dimen name="side_menu_button_horizontal_padding">30dp</dimen>
+</resources>
