@@ -2,11 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
+            android:name=".MainApplication"
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:theme="@style/MainTheme">
+
+        <!-- Disable sentry auto-init -->
+        <meta-data android:name="io.sentry.auto-init" android:value="false" />
+
         <activity
                 android:exported="true"
                 android:name=".MainActivity">

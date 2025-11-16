@@ -33,7 +33,7 @@ class BaseDroidRegistrar
             val baseDroidModule = module()
             {
                 //we need to create the instance of DroidMediaPickerService early as possible otherewise if we try to create instance later it will crash with error:
-                // java.lang.IllegalStateException: LifecycleOwner org.moviedemo.app.MainActivity@e0b40f8 is attempting to register while current state is RESUMED.
+                // java.lang.IllegalStateException: LifecycleOwner com.example.movieskmp.MainActivity@e0b40f8 is attempting to register while current state is RESUMED.
                 val mediaPickerService = DroidMediaPickerService()
 
                 //Essentials

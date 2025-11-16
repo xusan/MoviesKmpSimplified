@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:id="@+id/btnShare"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/side_menu_button_height"
+        android:layout_marginTop="50dp"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:paddingHorizontal="@dimen/side_menu_button_horizontal_padding"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <View
+                android:layout_width="@dimen/side_menu_button_icon_size"
+                android:layout_height="@dimen/side_menu_button_icon_size"
+                android:layout_gravity="center"
+                android:background="@drawable/icon_share"
+                android:backgroundTint="@color/LabelColor"/>
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/side_menu_button_icon_text_spacing"
+                android:layout_marginTop="@dimen/side_menu_button_icon_text_top_margin"
+                android:fontFamily="@font/senmedium"
+
+                android:text="Share Logs"
+                android:textColor="@color/LabelColor"
+                android:textSize="@dimen/side_menu_button_text_size"/>
+    </LinearLayout>
+    <View
+        android:id="@+id/line1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="1dp"
+        android:background="#F9F9F9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnShare" />
+
+    <LinearLayout
+            android:id="@+id/btnLogout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/side_menu_button_height"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:paddingHorizontal="@dimen/side_menu_button_horizontal_padding"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/line1">
+
+        <View
+                android:layout_width="@dimen/side_menu_button_icon_size"
+                android:layout_height="@dimen/side_menu_button_icon_size"
+                android:layout_gravity="center"
+                android:background="@drawable/icon_logout"
+                android:backgroundTint="@color/LabelColor"/>
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/side_menu_button_icon_text_spacing"
+                android:layout_marginTop="@dimen/side_menu_button_icon_text_top_margin"
+                android:fontFamily="@font/senmedium"
+
+                android:text="Logout"
+                android:textColor="@color/LabelColor"
+                android:textSize="@dimen/side_menu_button_text_size"/>
+    </LinearLayout>
+    <View
+            android:id="@+id/line2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="1dp"
+            android:background="#F9F9F9"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnLogout" />
+
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/side_menu_button_horizontal_padding"
+        android:layout_marginBottom="@dimen/side_menu_button_horizontal_padding"
+        android:background="@drawable/bg_version"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <View
+            android:layout_width="@dimen/side_menu_button_icon_size"
+            android:layout_height="@dimen/side_menu_button_icon_size"
+            android:layout_gravity="center"
+            android:background="@drawable/icon_logo"
+            android:backgroundTint="@color/BlueColor" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="@dimen/side_menu_button_icon_text_top_margin"
+            android:fontFamily="@font/senmedium"
+            android:text="Version: "
+            android:textColor="@color/LabelColor"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/lblVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="@dimen/side_menu_button_icon_text_top_margin"
+            android:fontFamily="@font/senmedium"
+            android:text="1"
+            android:textColor="@color/LabelColor"
+            android:textSize="14sp" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

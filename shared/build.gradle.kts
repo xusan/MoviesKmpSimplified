@@ -3,6 +3,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
+    id("io.realm.kotlin") version "3.0.0"
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -14,7 +16,7 @@ kotlin {
 
     listOf(iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "Shared"
+            baseName = "SharedAppCore"
             isStatic = true
         }
     }
