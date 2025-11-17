@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     id("io.realm.kotlin") version "3.0.0"
     alias(libs.plugins.kotlin.serialization)
+    id("io.sentry.kotlin.multiplatform.gradle") version "0.19.0"
 }
 
 kotlin {

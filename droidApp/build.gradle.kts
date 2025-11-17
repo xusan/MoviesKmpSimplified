@@ -80,19 +80,36 @@ android {
     }
 }
 
+// Prevent Sentry from being included in the Android app through the AGP.
+//configurations {
+//    compileOnly {
+//        exclude(group = "io.sentry", module = "sentry")
+//        exclude(group = "io.sentry", module = "sentry-android")
+//    }
+//}
+
 sentry {
     // Auto-Install Sentry dependencies
     autoInstallation {
-        enabled = true
+        enabled = false
     }
-    // The slug of the Sentry organization to use for uploading proguard mappings/source contexts.
-    org.set("freelance-6m")
-    // The slug of the Sentry project to use for uploading proguard mappings/source contexts.
-    projectName.set("kotlin-bestapp")
-    // The authentication token to use for uploading proguard mappings/source contexts.
-    // TODO: Do not expose this token in your build.gradle files, but rather set an environment variable and read it into this property.
-    authToken.set("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")
-    debug = false
-    includeSourceContext = true
+
+    //Read from the environment variable
+    val token = System.getenv("SENTRY_AUTH_TOKEN") ?: ""
+    //⚠️ NOTE you need to save it in the environment variable for example: in PowerSheell - setx SENTRY_AUTH_TOKEN "paste_your_token"
+    if (token.isNotBlank())
+    {
+        // The slug of the Sentry organization to use for uploading proguard mappings/source contexts.
+        org.set("freelance-6m")
+        projectName.set("kotlin-bestapp")
+        authToken.set(token)
+
+        debug = false
+        includeSourceContext = true
+    }
+    else
+    {
+        println("⚠️ SENTRY_AUTH_TOKEN is not set — skipping Sentry upload configuration.")
+    }
 }
 

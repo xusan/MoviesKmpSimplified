@@ -117,6 +117,7 @@ internal class AppLoggingService : KoinComponent, ILoggingService
                     append(HANDLED_ERROR)
                 else
                     append(UNHANDLED_ERROR)
+
                 if (message.isNotEmpty())
                 {
                     append(": $message - ")
