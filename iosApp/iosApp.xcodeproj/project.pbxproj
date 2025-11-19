@@ -16,6 +16,7 @@
 		0D93100B2EC9C8F300AADFC6 /* SwiftyBeaver in Frameworks */ = {isa = PBXBuildFile; productRef = 0D93100A2EC9C8F300AADFC6 /* SwiftyBeaver */; };
 		0D93100E2EC9C90F00AADFC6 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 0D93100D2EC9C90F00AADFC6 /* ZIPFoundation */; };
 		4E75F99AB1A51ECBA77F72ED /* Pods_iosApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 896B719C8D0A37303336D3D5 /* Pods_iosApp.framework */; };
+		8F377DF12ECDEE0E002458AC /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 8F377DF02ECDEE0E002458AC /* Sentry */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -61,6 +62,7 @@
 				0D9310032EC9C8B700AADFC6 /* SDWebImageMapKit in Frameworks */,
 				0D930FFE2EC9C7E500AADFC6 /* SDWebImageMapKit in Frameworks */,
 				0D9310082EC9C8D800AADFC6 /* SVGKitSwift in Frameworks */,
+				8F377DF12ECDEE0E002458AC /* Sentry in Frameworks */,
 				0D9310012EC9C8B700AADFC6 /* SDWebImage in Frameworks */,
 				4E75F99AB1A51ECBA77F72ED /* Pods_iosApp.framework in Frameworks */,
 				0D93100B2EC9C8F300AADFC6 /* SwiftyBeaver in Frameworks */,
@@ -117,6 +119,7 @@
 				80CF69E19EF6E7A45BCD3181 /* [CP] Check Pods Manifest.lock */,
 				EB15D481C6405B152EB7A2CF /* Compile Kotlin Framework */,
 				E724CA44E2F2CF72DFFE1222 /* Sources */,
+				8F377DF22ECDF009002458AC /* Upload dSYM debug symbols to Sentry */,
 				B52336534233D964A338ABC7 /* Frameworks */,
 				D62A70B6A26B43D2BE1A0320 /* Resources */,
 				48B3BEB33B82510CBA594EDA /* [CP] Embed Pods Frameworks */,
@@ -162,6 +165,7 @@
 				0D9310042EC9C8D800AADFC6 /* XCRemoteSwiftPackageReference "SVGKit" */,
 				0D9310092EC9C8F300AADFC6 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */,
 				0D93100C2EC9C90F00AADFC6 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+				8F377DEF2ECDEE0E002458AC /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 18D0006DD43148830DA61B09 /* Products */;
@@ -222,6 +226,24 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		8F377DF22ECDF009002458AC /* Upload dSYM debug symbols to Sentry */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Upload dSYM debug symbols to Sentry";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "###########################################################################\n# 🪶 Sentry dSYM Upload Script\n# This script uploads dSYM (debug symbol) files to Sentry automatically\n# so that crash reports can be symbolicated (show readable stack traces).\n# Also add this line to the \"Input Files\" section of the script:\n#   ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${EXECUTABLE_NAME}\n#\n# Never commit your SENTRY_AUTH_TOKEN to version control.\n\n#Also:\n# 1: Yoiu need to install Sentry CLI on host machine in order to bellow script to run\n###########################################################################\n\n# 🧱 1. Skip script for Debug and Simulator builds\n#    - We only upload symbols for Release builds (those used in production or TestFlight).\nif [ \"$CONFIGURATION\" != \"Release\" ] || [ \"$EFFECTIVE_PLATFORM_NAME\" == \"-iphonesimulator\" ]; then\n    echo \"ℹ️  Skipping Sentry dSYM upload for $CONFIGURATION $EFFECTIVE_PLATFORM_NAME build\"\n    exit 0\nfi\n\n# 🧠 2. Update PATH for Apple Silicon (arm64) Macs\n#    - Homebrew installs binaries in /opt/homebrew/bin on Apple Silicon (M1/M2/M3 chips)\n#    - This ensures Xcode can find sentry-cli.\nif [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\n# 🪶 3. Check if sentry-cli is available\n#    - sentry-cli is the command-line tool used to upload debug symbols.\nif which sentry-cli >/dev/null; then\nexport SENTRY_ORG=freelance-6m\nexport SENTRY_PROJECT=swift-bestapp\nexport SENTRY_AUTH_TOKEN=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\n\n# 🧩 4. Upload dSYM files\n    #    - \"$DWARF_DSYM_FOLDER_PATH\" points to where Xcode stores dSYM bundles for this build.\n    #    - Redirect output to /dev/null to keep logs clean, but capture any error message.\nERROR=$(sentry-cli debug-files upload \\\n\"$DWARF_DSYM_FOLDER_PATH\" --force-foreground 2>&1 >/dev/null)\n\n# 🧭 5. Check exit status and print warning if upload failed\nif [ ! $? -eq 0 ]; then\necho \"error: sentry-cli - $ERROR\"\nfi\nelse\necho \"error: sentry-cli not installed, download from https://github.com/getsentry/sentry-cli/releases\"\nfi\n";
 		};
 		EB15D481C6405B152EB7A2CF /* Compile Kotlin Framework */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -516,6 +538,14 @@
 				minimumVersion = 0.9.20;
 			};
 		};
+		8F377DEF2ECDEE0E002458AC /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/getsentry/sentry-cocoa.git";
+			requirement = {
+				kind = exactVersion;
+				version = 8.57.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -558,6 +588,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0D93100C2EC9C90F00AADFC6 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
 			productName = ZIPFoundation;
+		};
+		8F377DF02ECDEE0E002458AC /* Sentry */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8F377DEF2ECDEE0E002458AC /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
+			productName = Sentry;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

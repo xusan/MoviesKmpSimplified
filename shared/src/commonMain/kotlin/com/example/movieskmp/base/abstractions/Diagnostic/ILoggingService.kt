@@ -22,6 +22,7 @@ interface ILoggingService : ILogging
     suspend fun GetCompressedLogFileBytes(getOnlyLastSession: Boolean = false): ByteArray?
     suspend fun GetSomeLogTextAsync(): String
     fun GetLogsFolder(): String
+    fun GetCurrentLogFileName(): String
     suspend fun GetLastSessionLogBytes(): ByteArray?
     fun CreateSpecificLogger(key: String): ILogging
 }

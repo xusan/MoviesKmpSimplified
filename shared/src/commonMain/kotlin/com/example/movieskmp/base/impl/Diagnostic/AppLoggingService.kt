@@ -68,7 +68,6 @@ internal class AppLoggingService : KoinComponent, ILoggingService
                 {
                     try
                     {
-                        //val attachments = GetLastSessionLogBytes()
                         errorTrackingService.TrackError(ex, null)
                     }
                     catch (ex: Throwable)
@@ -183,6 +182,11 @@ internal class AppLoggingService : KoinComponent, ILoggingService
     override fun GetLogsFolder(): String
     {
         return fileLogger.GetLogsFolder()
+    }
+
+    override fun GetCurrentLogFileName(): String
+    {
+       return fileLogger.GetCurrentLogFileName()
     }
 
     override suspend fun GetLastSessionLogBytes(): ByteArray?

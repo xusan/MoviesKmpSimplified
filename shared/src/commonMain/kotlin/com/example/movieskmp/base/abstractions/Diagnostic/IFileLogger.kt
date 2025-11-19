@@ -14,4 +14,5 @@ interface IFileLogger
     suspend fun GetCompressedLogsSync(getOnlyLastSession: Boolean): ByteArray?
     suspend fun GetLogListAsync(): List<String>
     fun GetLogsFolder(): String
+    fun GetCurrentLogFileName(): String
 }
