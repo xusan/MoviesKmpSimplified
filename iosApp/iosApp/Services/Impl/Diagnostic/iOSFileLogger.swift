@@ -5,6 +5,7 @@ import SwiftyBeaver
 
 class iOSFileLogger: IFileLogger
 {
+    
     private var directoryService: IDirectoryService!
     private var zipService: IZipService!
     private let log = SwiftyBeaver.self
@@ -114,7 +115,11 @@ class iOSFileLogger: IFileLogger
             return ""
         }
     }
-
+    
+    func GetCurrentLogFileName() -> String
+    {
+        return currentLogPath
+    }
     
     public func getCompressedLogsInternal(getOnlyLastSession: Bool) async throws -> Data?
     {

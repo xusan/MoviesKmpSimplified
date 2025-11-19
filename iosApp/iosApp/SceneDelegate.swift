@@ -1,5 +1,6 @@
 import UIKit
 import SVGKit
+import SharedAppCore
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -36,9 +37,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let loggingService = try! KoinResolver().GetLoggingService()
         loggingService.Log(message: "####################################################- APPLICATION STARTED -####################################################")
         loggingService.Log(message: "AppDelegate.FinishedLaunching()")
+       
                
        Task {
            await bootstrap.NavigateToPage(pageNavigationService)
+           //setup attachment for error tracking service.
+           // NOTE: The log file is only created after the first log entry.
+           // A small delay is required to allow the buffer to flush to disk.
+           try? await Task.sleep(nanoseconds: 300 * 1_000_000)
+           appDelegate.appErrorTracking.SetupAttachment()
        }
         
         self.sideViewController = SideMenuController()
@@ -87,4 +94,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
        UserDefaults.standard.set("en_US", forKey: "AppleLocale")
        UserDefaults.standard.synchronize()
     }
+    
+    
 }
