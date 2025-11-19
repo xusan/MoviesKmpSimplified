@@ -17,16 +17,16 @@ internal class DroidPreferencesImplementation : LoggableService(), IPreferences
 {
     private val locker = Any()
 
-    init
-    {
-        InitSpecificlogger(SpecificLoggingKeys.LogEssentialServices)
-    }
+//    init
+//    {
+//        InitSpecificlogger(SpecificLoggingKeys.LogEssentialServices)
+//    }
 
     override fun ContainsKey(key: String, sharedName: String?): Boolean
     {
         synchronized(locker)
         {
-            SpecificLogMethodStart(::ContainsKey.name, key, sharedName)
+            //SpecificLogMethodStart(::ContainsKey.name, key, sharedName)
             val sharedPreferences = GetSharedPreferences(sharedName)
             return sharedPreferences.contains(key)
         }
@@ -36,7 +36,7 @@ internal class DroidPreferencesImplementation : LoggableService(), IPreferences
     {
         synchronized(locker)
         {
-            SpecificLogMethodStart(::Remove.name, key, sharedName)
+            //SpecificLogMethodStart(::Remove.name, key, sharedName)
             val sharedPreferences = GetSharedPreferences(sharedName)
             val editor = sharedPreferences.edit()
             editor.remove(key).apply()
@@ -47,7 +47,7 @@ internal class DroidPreferencesImplementation : LoggableService(), IPreferences
     {
         synchronized(locker)
         {
-            SpecificLogMethodStart(::Clear.name, sharedName)
+            //SpecificLogMethodStart(::Clear.name, sharedName)
             val sharedPreferences = GetSharedPreferences(sharedName)
             val editor = sharedPreferences.edit()
             editor.clear().apply()
@@ -58,7 +58,7 @@ internal class DroidPreferencesImplementation : LoggableService(), IPreferences
     {
         synchronized(locker)
         {
-            SpecificLogMethodStart("Set", key, sharedName)
+            //SpecificLogMethodStart("Set", key, sharedName)
             val sharedPreferences = GetSharedPreferences(sharedName)
             val editor = sharedPreferences.edit()
             if (value == null)
@@ -70,33 +70,33 @@ internal class DroidPreferencesImplementation : LoggableService(), IPreferences
                 when (value)
                 {
                     is String -> {
-                        SpecificLogMethodStart("Set", key, value, sharedName)
+                        //SpecificLogMethodStart("Set", key, value, sharedName)
                         editor.putString(key, value)
                     }
                     is Int -> {
-                        SpecificLogMethodStart("Set", key, value, sharedName)
+                        //SpecificLogMethodStart("Set", key, value, sharedName)
                         editor.putInt(key, value)
                     }
                     is Boolean -> {
-                        SpecificLogMethodStart("Set", key, value, sharedName)
+                        //SpecificLogMethodStart("Set", key, value, sharedName)
                         editor.putBoolean(key, value)
                     }
                     is Long -> {
-                        SpecificLogMethodStart("Set", key, value, sharedName)
+                        //SpecificLogMethodStart("Set", key, value, sharedName)
                         editor.putLong(key, value)
                     }
                     is Double ->
                     {
-                        SpecificLogMethodStart("Set", key, value, sharedName)
+                        //SpecificLogMethodStart("Set", key, value, sharedName)
                         val valueString = String.format(Locale.ROOT, "%s", value)
                         editor.putString(key, valueString)
                     }
                     is Float -> {
-                        SpecificLogMethodStart("Set", key, value, sharedName)
+                        //SpecificLogMethodStart("Set", key, value, sharedName)
                         editor.putFloat(key, value)
                     }
                     is Date -> {
-                        SpecificLogMethodStart("Set", key, value.time, sharedName)
+                        //SpecificLogMethodStart("Set", key, value.time, sharedName)
                         editor.putLong(key, value.time)
                     }
 //                    is OffsetDateTime -> {
@@ -112,7 +112,7 @@ internal class DroidPreferencesImplementation : LoggableService(), IPreferences
     {
         synchronized(locker)
         {
-            SpecificLogMethodStart("Get", key, sharedName)
+            //SpecificLogMethodStart("Get", key, sharedName)
 
             var value: Any? = null
             val sharedPreferences = GetSharedPreferences(sharedName)
@@ -176,7 +176,7 @@ internal class DroidPreferencesImplementation : LoggableService(), IPreferences
                 }
             }
 
-            specificLogger.Log("DroidPreferencesImplementation.Get($key) -> $value")
+            //specificLogger.Log("DroidPreferencesImplementation.Get($key) -> $value")
             @Suppress("UNCHECKED_CAST")
             return value as T
         }

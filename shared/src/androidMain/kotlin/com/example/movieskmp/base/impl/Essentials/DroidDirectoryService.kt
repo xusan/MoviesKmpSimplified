@@ -13,28 +13,26 @@ internal class DroidDirectoryService : LoggableService(), IDirectoryService
 {
     private val context: Context get() = CurrentActivity.AppContext ?: throw IllegalStateException("CurrentActivity.AppContext is not set")
 
-    init
-    {
-        InitSpecificlogger(SpecificLoggingKeys.LogEssentialServices)
-    }
-
     override fun GetCacheDir(): String
     {
-        SpecificLogMethodStart(::GetCacheDir.name)
+//        EnsureSpecificLoggerInit()
+//        SpecificLogMethodStart(::GetCacheDir.name)
         val cacheDir = context.cacheDir.absolutePath;
         return cacheDir;
     }
 
     override fun GetAppDataDir(): String
     {
-        SpecificLogMethodStart(::GetAppDataDir.name)
+//        EnsureSpecificLoggerInit()
+//        SpecificLogMethodStart(::GetAppDataDir.name)
         val appDir = context.filesDir.absolutePath;
         return appDir;
     }
 
     override fun IsExistDir(path: String): Boolean
     {
-        SpecificLogMethodStart(::IsExistDir.name, path)
+//        EnsureSpecificLoggerInit()
+//        SpecificLogMethodStart(::IsExistDir.name, path)
 
         val dir = File(path)
 
@@ -47,7 +45,8 @@ internal class DroidDirectoryService : LoggableService(), IDirectoryService
 
     override fun CreateDir(path: String)
     {
-        SpecificLogMethodStart(::CreateDir.name)
+//        EnsureSpecificLoggerInit()
+//        SpecificLogMethodStart(::CreateDir.name)
 
         val dir = File(path)
 
@@ -55,5 +54,10 @@ internal class DroidDirectoryService : LoggableService(), IDirectoryService
         {
             dir.mkdirs() // creates all necessary parent folders
         }
+    }
+
+    fun EnsureSpecificLoggerInit()
+    {
+        InitSpecificlogger(SpecificLoggingKeys.LogEssentialServices)
     }
 }

@@ -44,15 +44,12 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService
     {
     }
 
-    // 🔥 This block executes for EVERY constructor
-    init
-    {
-        val loggingService = ContainerLocator.Resolve<ILoggingService>()
-        specificLogger = loggingService.CreateSpecificLogger(SpecificLoggingKeys.LogUINavigationKey)
-    }
+
 
     private var _disposed: Boolean = false
     private var animationDuration: Int = 250
+
+
 
     private val FragmentManager: FragmentManager
         get()
@@ -99,6 +96,24 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService
 
             return _navRegistrar!!
         }
+
+    private var isInitialized = false
+
+    override fun onAttachedToWindow()
+    {
+        super.onAttachedToWindow()
+
+        if (!isInitialized)
+        {
+            isInitialized = true
+            initialize()
+        }
+    }
+
+    private fun initialize() {
+        val loggingService = ContainerLocator.Resolve<ILoggingService>()
+        specificLogger = loggingService.CreateSpecificLogger(SpecificLoggingKeys.LogUINavigationKey)
+    }
 
     override suspend fun Navigate(url: String, parameters: INavigationParameters?, useModalNavigation: Boolean, animated: Boolean, wrapIntoNav: Boolean)
     {

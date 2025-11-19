@@ -45,7 +45,6 @@ internal class DroidMediaPickerService : LoggableService(), IMediaPickerService
     {
         activity = CurrentActivity.Instance
         fileProviderAuthority = "${activity.packageName}.media.fileprovider"
-        InitSpecificlogger(SpecificLoggingKeys.LogEssentialServices)
 
         if (!activity.lifecycle.currentState.isAtLeast(Lifecycle.State.INITIALIZED))
             throw IllegalStateException("Call IMediaPickerService.Initialize() before MainActivity.onCreate() finishes")

@@ -354,6 +354,9 @@ class ConditionalLogger(private val key: String, private val logger: ILogging, p
 
     override fun LogMethodStarted(className: String, methodName: String, args: List<Any?>?)
     {
-        LogMethodStarted(className, methodName, args)
+        if (canLog)
+        {
+            logger.LogMethodStarted(className, methodName, args)
+        }
     }
 }

@@ -16,12 +16,8 @@ internal class EssentialFileProvider : FileProvider()
 {
     companion object
     {
-        var specificLogger: ILogging
-        init
-        {
-            val loggingService = ContainerLocator.Resolve<ILoggingService>()
-            specificLogger = loggingService.CreateSpecificLogger(SpecificLoggingKeys.LogEssentialServices)
-        }
+        lateinit var specificLogger: ILogging
+        var isLoggerInitialized = false
 
         internal var AlwaysFailExternalMediaAccess: Boolean = false
 
@@ -34,6 +30,8 @@ internal class EssentialFileProvider : FileProvider()
 
         internal fun GetTemporaryRootDirectory(): File
         {
+            InitLogger()
+
             specificLogger.LogMethodStarted("EssentialFileProvider", "GetTemporaryRootDirectory")
             // If we specifically want the internal storage, no extra checks are needed, we have permission
             if (TemporaryLocation == FileProviderLocation.Internal)
@@ -63,12 +61,16 @@ internal class EssentialFileProvider : FileProvider()
 
         private fun IsMediaMounted(location: File): Boolean
         {
+            InitLogger()
+
             specificLogger.LogMethodStarted("EssentialFileProvider", "IsMediaMounted")
             return Environment.getExternalStorageState(location) == Environment.MEDIA_MOUNTED
         }
 
         internal fun IsFileInPublicLocation(filename: String): Boolean
         {
+            InitLogger()
+
             specificLogger.LogMethodStarted("EssentialFileProvider", "IsFileInPublicLocation")
             // get the Android path, we use "CanonicalPath" instead of "AbsolutePath"
             // because we want to resolve any ".." and links/redirects
@@ -116,8 +118,19 @@ internal class EssentialFileProvider : FileProvider()
 
         internal fun GetUriForFile(file: File): AndroidUri
         {
+            InitLogger()
             specificLogger.LogMethodStarted("EssentialFileProvider", "GetUriForFile")
             return androidx.core.content.FileProvider.getUriForFile(CurrentActivity.Instance, Authority, file)
+        }
+
+        fun InitLogger()
+        {
+            if(isLoggerInitialized == false)
+            {
+                val loggingService = ContainerLocator.Resolve<ILoggingService>()
+                specificLogger = loggingService.CreateSpecificLogger(SpecificLoggingKeys.LogEssentialServices)
+                isLoggerInitialized = true
+            }
         }
     }
 }
