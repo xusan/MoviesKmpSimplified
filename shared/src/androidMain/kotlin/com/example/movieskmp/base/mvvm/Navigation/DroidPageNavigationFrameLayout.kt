@@ -5,8 +5,11 @@ import android.util.AttributeSet
 import android.widget.FrameLayout
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import com.base.abstractions.Diagnostic.ILogging
 import com.base.abstractions.Diagnostic.ILoggingService
+import com.base.abstractions.Diagnostic.SpecificLoggingKeys
 import com.base.impl.ContainerLocator
+import com.base.impl.Diagnostic.LoggableService
 import com.base.impl.Droid.Utils.ContextExtensions.HideKeyboard
 import com.base.impl.Droid.Utils.CurrentActivity
 import com.base.mvvm.Droid.Navigation.Pages.DroidLifecyclePage
@@ -22,6 +25,8 @@ import com.example.movieskmp.shared.R.*
 
 class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService
 {
+    lateinit var specificLogger: ILogging
+
     constructor(context: Context) : super(context)
     {
 
@@ -37,6 +42,13 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
     {
+    }
+
+    // 🔥 This block executes for EVERY constructor
+    init
+    {
+        val loggingService = ContainerLocator.Resolve<ILoggingService>()
+        specificLogger = loggingService.CreateSpecificLogger(SpecificLoggingKeys.LogUINavigationKey)
     }
 
     private var _disposed: Boolean = false
@@ -92,6 +104,7 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService
     {
         try
         {
+            SpecificLogMethodStart(::Navigate.name, url)
             val params = parameters ?: NavigationParameters()
 
             val navInfo = UrlNavigationHelper.Companion.Parse(url)
@@ -136,6 +149,7 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService
     {
         try
         {
+            SpecificLogMethodStart(::NavigateToRoot.name)
             val params = parameters ?: NavigationParameters()
             OnPopToRootAsync(params)
         }
@@ -147,6 +161,7 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService
 
     private suspend fun OnPushAsync(vmName: String, parameters: INavigationParameters, animated: Boolean)
     {
+        SpecificLogMethodStart(::NavigateToRoot.name, vmName)
         //create new page
         val oldPage = currentPage
         val newPage = navRegistrar.CreatePage(vmName, parameters) as DroidLifecyclePage
@@ -185,6 +200,8 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService
 
     private suspend fun OnPopAsync(parameters: INavigationParameters)
     {
+        SpecificLogMethodStart(::NavigateToRoot.name)
+
         if (navStack.size == 1)
         {
             return
@@ -234,6 +251,7 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService
 
     private suspend fun OnMultiPopAsync(url: String, parameters: INavigationParameters, animated: Boolean)
     {
+        SpecificLogMethodStart(::OnMultiPopAsync.name, url)
         val pagesToRemove = mutableListOf<DroidLifecyclePage>()
         val splitedCount = url.split('/').size - 1
         for (i in 0 until splitedCount)
@@ -288,6 +306,7 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService
 
     private suspend fun OnMultiPopAndPush(url: String, parameters: INavigationParameters, animated: Boolean)
     {
+        SpecificLogMethodStart(::OnMultiPopAndPush.name, url)
         //push new page to ui stack
         val pushTransaction = FragmentManager.beginTransaction()
         if (animated)
@@ -329,6 +348,7 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService
 
     private suspend fun OnPushRootAsync(url: String, parameters: INavigationParameters, animated: Boolean)
     {
+        SpecificLogMethodStart(::OnPushRootAsync.name, url)
         //create page and save it to local stack list
         val vmName = url.replace("/", "").replace("NavigationPage", "")
         currentPage = navRegistrar.CreatePage(vmName, parameters) as DroidLifecyclePage
@@ -371,6 +391,7 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService
 
     private suspend fun OnMultiPushRootAsync(url: String, parameters: INavigationParameters, animated: Boolean)
     {
+        SpecificLogMethodStart(::OnMultiPushRootAsync.name, url)
         //remove existing pages
         val pagesToRemove = navStack.toList()
         //clear local stack list
@@ -433,6 +454,8 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService
 
     private suspend fun OnPopToRootAsync(parameters: INavigationParameters)
     {
+        SpecificLogMethodStart(::OnPopToRootAsync.name)
+
         if (navStack.size <= 1)
         {
             return
@@ -487,33 +510,52 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService
 
     override fun GetCurrentPageModel(): PageViewModel?
     {
+        SpecificLogMethodStart(::GetCurrentPageModel.name)
         val page = navStack.lastOrNull()
         return page?.ViewModel
     }
 
     override fun GetRootPageModel(): PageViewModel?
     {
+        SpecificLogMethodStart(::GetRootPageModel.name)
+
         val page = navStack.firstOrNull()
         return page?.ViewModel
     }
 
     override fun GetCurrentPage(): IPage?
     {
+        SpecificLogMethodStart(::GetCurrentPage.name)
         val page = navStack.lastOrNull()
         return page
     }
 
     override fun GetNavStackModels(): List<PageViewModel>
     {
+        SpecificLogMethodStart(::GetNavStackModels.name)
         val viewModels = navStack.map { x -> x.ViewModel }
         return viewModels
     }
 
     private fun PrintCurrentStack()
     {
+        SpecificLogMethodStart(::PrintCurrentStack.name)
         val currentStack = GetNavStackModels()
         val currentUri = currentStack.joinToString("/")
 
         Logger.Log("${DroidPageNavigationFrameLayout::class.simpleName}: current stack: $currentUri")
+    }
+
+    fun SpecificLogMethodStart(methodName: String, vararg args: Any? )
+    {
+        try
+        {
+            val className = this::class.simpleName!!
+            specificLogger.LogMethodStarted(className, methodName, args.toList())
+        }
+        catch (ex: Throwable)
+        {
+            println(ex.stackTraceToString())
+        }
     }
 }

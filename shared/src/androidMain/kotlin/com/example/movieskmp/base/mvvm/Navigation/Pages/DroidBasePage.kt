@@ -12,6 +12,8 @@ import com.base.impl.Droid.Utils.ContextExtensions.ToPixels
 import com.base.impl.Droid.Utils.CurrentActivity
 import com.base.abstractions.Common.Point
 import com.base.abstractions.Common.Rectangle
+import com.base.abstractions.Diagnostic.ILogging
+import com.base.abstractions.Diagnostic.SpecificLoggingKeys
 import com.base.mvvm.Navigation.IPage
 import com.base.mvvm.ViewModels.PageViewModel
 import java.util.*
@@ -23,6 +25,7 @@ open class DroidBasePage : Fragment(), IPage, IDispatchEventListener {
     override lateinit var ViewModel: PageViewModel
 
     protected lateinit var loggingService: ILoggingService
+    protected lateinit var specificLogger: ILogging
 
     private var downPosition: Point? = null
     private var downTime: Date? = null
@@ -31,6 +34,7 @@ open class DroidBasePage : Fragment(), IPage, IDispatchEventListener {
         super.onCreate(savedInstanceState)
 
         loggingService = ContainerLocator.Resolve<ILoggingService>()
+        specificLogger = loggingService.CreateSpecificLogger(SpecificLoggingKeys.LogUIPageKey)
     }
 
     /**
@@ -82,6 +86,19 @@ open class DroidBasePage : Fragment(), IPage, IDispatchEventListener {
 
             ctx.HideKeyboard(currentView)
             CurrentActivity.Instance.window.decorView.clearFocus()
+        }
+    }
+
+    fun SpecificLogMethodStart(methodName: String, vararg args: Any? )
+    {
+        try
+        {
+            val className = this::class.simpleName!!
+            specificLogger.LogMethodStarted(className, methodName, args.toList())
+        }
+        catch (ex: Throwable)
+        {
+            println(ex.stackTraceToString())
         }
     }
 }

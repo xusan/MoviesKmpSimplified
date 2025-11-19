@@ -59,17 +59,6 @@ open class PageViewModel(val injectedService: InjectedService) : NavigatingBaseV
         appPausedEvent.Subscribe(::PausedToBackground);
     }
 
-    override fun OnNavigatedTo(parameters: INavigationParameters)
-    {
-        LogVirtualBaseMethod(::OnNavigatedTo.name)
-        super.OnNavigatedTo(parameters)
-    }
-
-    override fun OnNavigatedFrom(parameters: INavigationParameters)
-    {
-        LogVirtualBaseMethod(::OnNavigatedTo.name)
-        super.OnNavigatedFrom(parameters)
-    }
     override fun OnAppearing()
     {
         LogVirtualBaseMethod(::OnAppearing.name)
@@ -301,14 +290,8 @@ open class PageViewModel(val injectedService: InjectedService) : NavigatingBaseV
         }
     }
 
-    protected fun LogVirtualBaseMethod(methodName: String)
-    {
-        injectedServices.LoggingService.Log("${this::class.simpleName}.${methodName}() (from base)");
-    }
-//    protected fun LogMethodStart(methodName: String, vararg param: Any?)
+//    protected fun LogVirtualBaseMethod(methodName: String)
 //    {
-//        var className = this::class.simpleName!!;
-//        injectedServices.LoggingService.LogMethodStarted(className, methodName, param)
+//        injectedServices.LoggingService.Log("${this::class.simpleName}.${methodName}() (from base)");
 //    }
-
 }

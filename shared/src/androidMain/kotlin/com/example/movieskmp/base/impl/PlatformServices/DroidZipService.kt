@@ -1,15 +1,24 @@
 package com.base.impl.Droid.PlatformServices
 
+import com.base.abstractions.Diagnostic.SpecificLoggingKeys
 import com.base.abstractions.Platform.IZipService
+import com.base.impl.Diagnostic.LoggableService
 import java.io.*
 import java.util.zip.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-internal class DroidZipService : IZipService
+internal class DroidZipService : LoggableService(), IZipService
 {
-    override suspend fun CreateFromDirectoryAsync(dirPath: String, zipPath: String) =
-        withContext(Dispatchers.IO) {
+    init
+    {
+        InitSpecificlogger(SpecificLoggingKeys.LogEssentialServices)
+    }
+
+    override suspend fun CreateFromDirectoryAsync(dirPath: String, zipPath: String)
+    {
+        SpecificLogMethodStart(::CreateFromDirectoryAsync.name, dirPath, zipPath)
+       return withContext(Dispatchers.IO) {
             val dir = File(dirPath)
             ZipOutputStream(BufferedOutputStream(FileOutputStream(zipPath))).use { zipOut ->
                 dir.walkTopDown().forEach { file ->
@@ -22,9 +31,13 @@ internal class DroidZipService : IZipService
                 }
             }
         }
+    }
 
-    override suspend fun ExtractToDirectoryAsync(zipPath: String, dirPath: String, overwrite: Boolean) =
-        withContext(Dispatchers.IO) {
+    override suspend fun ExtractToDirectoryAsync(zipPath: String, dirPath: String, overwrite: Boolean)
+    {
+        SpecificLogMethodStart(::ExtractToDirectoryAsync.name,zipPath, dirPath, overwrite)
+
+        return withContext(Dispatchers.IO) {
             val buffer = ByteArray(1024)
             ZipInputStream(BufferedInputStream(FileInputStream(zipPath))).use { zipIn ->
                 var entry = zipIn.nextEntry
@@ -48,9 +61,13 @@ internal class DroidZipService : IZipService
                 }
             }
         }
+    }
 
-    override suspend fun CreateFromFileAsync(filePath: String, zipPath: String) =
-        withContext(Dispatchers.IO) {
+    override suspend fun CreateFromFileAsync(filePath: String, zipPath: String)
+    {
+        SpecificLogMethodStart(::CreateFromFileAsync.name,filePath, zipPath)
+
+        return withContext(Dispatchers.IO) {
             val file = File(filePath)
             ZipOutputStream(BufferedOutputStream(FileOutputStream(zipPath))).use { zipOut ->
                 val entryName = file.name
@@ -59,4 +76,5 @@ internal class DroidZipService : IZipService
                 zipOut.closeEntry()
             }
         }
+    }
 }

@@ -2,6 +2,7 @@ package com.base.impl.Diagnostic
 
 import com.base.abstractions.Diagnostic.IErrorTrackingService
 import com.base.abstractions.Diagnostic.IFileLogger
+import com.base.abstractions.Diagnostic.ILogging
 import com.base.abstractions.Diagnostic.ILoggingService
 import com.base.abstractions.Diagnostic.IPlatformOutput
 import com.base.abstractions.Essentials.IPreferences
@@ -129,6 +130,12 @@ internal class AppLoggingService : KoinComponent, ILoggingService
         }
     }
 
+    override fun CreateSpecificLogger(key: String): ILogging
+    {
+        val specLogger = ConditionalLogger(key, this, preferences)
+        return specLogger
+    }
+
     override fun Header(headerMessage: String)
     {
         SafeCall()
@@ -241,7 +248,6 @@ internal class AppLoggingService : KoinComponent, ILoggingService
         {
             platformConsole?.Error(ex.stackTraceToString())
         }
-
     }
 
 
@@ -323,5 +329,31 @@ internal class AppLoggingService : KoinComponent, ILoggingService
         }
 
         return "$className.${funcName ?: "?"}($argsString)";
+    }
+}
+
+class ConditionalLogger(private val key: String, private val logger: ILogging, private val preferences: IPreferences) : ILogging
+{
+    private val canLog: Boolean = preferences.Get(key, false)
+
+    override fun Log(message: String)
+    {
+        if (canLog)
+        {
+            logger.Log(message)
+        }
+    }
+
+    override fun LogWarning(message: String)
+    {
+        if (canLog)
+        {
+            logger.LogWarning(message)
+        }
+    }
+
+    override fun LogMethodStarted(className: String, methodName: String, args: List<Any?>?)
+    {
+        LogMethodStarted(className, methodName, args)
     }
 }

@@ -2,15 +2,23 @@ package com.base.impl.Droid.Essentials
 
 import android.content.Intent
 import android.webkit.MimeTypeMap
+import com.base.abstractions.Diagnostic.SpecificLoggingKeys
 import com.base.abstractions.Essentials.IShare
+import com.base.impl.Diagnostic.LoggableService
 import com.base.impl.Droid.Essentials.Utils.FileSystemUtils
 import com.base.impl.Droid.Utils.CurrentActivity
 import java.io.File
 
-internal class DroidShareImplementation : IShare
+internal class DroidShareImplementation : LoggableService(), IShare
 {
+    init
+    {
+        InitSpecificlogger(SpecificLoggingKeys.LogEssentialServices)
+    }
+
     override fun RequestShareFile(title: String, fullPath: String)
     {
+        SpecificLogMethodStart(::RequestShareFile.name, title, fullPath)
         val fileUrl = FileSystemUtils.GetShareableFileUri(fullPath)
         val extension = File(fullPath).extension.lowercase()  // e.g. "jpg"
         val contentType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)

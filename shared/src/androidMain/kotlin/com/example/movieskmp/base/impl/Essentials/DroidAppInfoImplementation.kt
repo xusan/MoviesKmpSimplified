@@ -6,26 +6,46 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import androidx.core.content.pm.PackageInfoCompat
+import com.base.abstractions.Diagnostic.ILogging
+import com.base.abstractions.Diagnostic.ILoggingService
+import com.base.abstractions.Diagnostic.SpecificLoggingKeys
 import com.base.abstractions.Essentials.IAppInfo
 import com.base.abstractions.Essentials.LayoutDirection
+import com.base.impl.Diagnostic.LoggableService
 import com.base.impl.Droid.Utils.CurrentActivity
+import org.koin.core.component.inject
 
-internal class DroidAppInfoImplementation : IAppInfo
+internal class DroidAppInfoImplementation : LoggableService(), IAppInfo
 {
-    companion object
+    init
     {
-        private val _name = lazy { CurrentActivity.Instance.applicationInfo.loadLabel(CurrentActivity.Instance.packageManager) as String }
-        private val _packageName = lazy { CurrentActivity.Instance.packageName }
-        // Deprecated in API 33: https://developer.android.com/reference/android/content/pm/PackageManager#getPackageInfo(java.lang.String,%20int)
-        private val _packageInfo = lazy {
-            val pm = CurrentActivity.Instance.packageManager
-            val packageName = _packageName.value
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                pm.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(PackageManager.GET_META_DATA.toLong()))
-            } else {
-                @Suppress("DEPRECATION")
-                pm.getPackageInfo(packageName, PackageManager.GET_META_DATA)
-            }
+        InitSpecificlogger(SpecificLoggingKeys.LogEssentialServices)
+    }
+
+
+    private val _name = lazy {
+        SpecificLogMethodStart("_name")
+        CurrentActivity.Instance.applicationInfo.loadLabel(CurrentActivity.Instance.packageManager) as String
+    }
+    private val _packageName = lazy {
+        SpecificLogMethodStart("_packageName")
+        CurrentActivity.Instance.packageName
+    }
+    // Deprecated in API 33: https://developer.android.com/reference/android/content/pm/PackageManager#getPackageInfo(java.lang.String,%20int)
+    private val _packageInfo = lazy {
+        SpecificLogMethodStart("_packageInfo")
+        val pm = CurrentActivity.Instance.packageManager
+        val packageName = _packageName.value
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+        {
+            specificLogger.Log("DroidAppInfoImplementation._packageInfo using newer version")
+            pm.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(PackageManager.GET_META_DATA.toLong()))
+        }
+        else
+        {
+            specificLogger.Log("DroidAppInfoImplementation._packageInfo using older version")
+            @Suppress("DEPRECATION")
+            pm.getPackageInfo(packageName, PackageManager.GET_META_DATA)
         }
     }
 
@@ -46,6 +66,8 @@ internal class DroidAppInfoImplementation : IAppInfo
 
     override fun ShowSettingsUI()
     {
+        SpecificLogMethodStart("ShowSettingsUI")
+
         val context = CurrentActivity.Instance
 
         val settingsIntent = Intent()
@@ -64,6 +86,8 @@ internal class DroidAppInfoImplementation : IAppInfo
 
     private fun GetLayoutDirection(): LayoutDirection
     {
+        SpecificLogMethodStart("GetLayoutDirection()")
+
         val config = CurrentActivity.Instance.resources?.configuration
         if (config == null)
             return LayoutDirection.Unknown

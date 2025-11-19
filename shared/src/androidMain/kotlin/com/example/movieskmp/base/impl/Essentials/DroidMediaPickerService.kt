@@ -11,10 +11,13 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.lifecycle.Lifecycle
+import com.base.abstractions.Diagnostic.ILogging
+import com.base.abstractions.Diagnostic.SpecificLoggingKeys
 import com.base.abstractions.Essentials.IMediaPickerService
 import com.base.abstractions.Essentials.MediaFile
 import com.base.abstractions.Essentials.MediaOptions
 import com.base.abstractions.Essentials.MediaSource
+import com.base.impl.Diagnostic.LoggableService
 import com.base.impl.Droid.Essentials.Utils.InvalidOperationException
 import com.base.impl.Droid.Utils.CurrentActivity
 import kotlinx.coroutines.CompletableDeferred
@@ -28,7 +31,7 @@ import java.util.Locale
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-internal class DroidMediaPickerService : IMediaPickerService
+internal class DroidMediaPickerService : LoggableService(), IMediaPickerService
 {
     private var activity: ComponentActivity
     private var fileProviderAuthority: String
@@ -42,6 +45,7 @@ internal class DroidMediaPickerService : IMediaPickerService
     {
         activity = CurrentActivity.Instance
         fileProviderAuthority = "${activity.packageName}.media.fileprovider"
+        InitSpecificlogger(SpecificLoggingKeys.LogEssentialServices)
 
         if (!activity.lifecycle.currentState.isAtLeast(Lifecycle.State.INITIALIZED))
             throw IllegalStateException("Call IMediaPickerService.Initialize() before MainActivity.onCreate() finishes")
@@ -60,16 +64,19 @@ internal class DroidMediaPickerService : IMediaPickerService
 
     override suspend fun GetPhotoAsync(options: MediaOptions): MediaFile?
     {
+        SpecificLogMethodStart(::GetPhotoAsync.name, options)
         return pickImage(MediaSource.GALLERY, options)
     }
 
     override suspend fun TakePhotoAsync(options: MediaOptions): MediaFile?
     {
+        SpecificLogMethodStart(::TakePhotoAsync.name, options)
         return pickImage(MediaSource.CAMERA, options)
     }
 
     private suspend fun pickImage(source: MediaSource, options: MediaOptions): MediaFile?
     {
+        SpecificLogMethodStart(::pickImage.name, source, options)
         // ensure only one in-flight request
         if (pending != null) return null
 
@@ -117,6 +124,8 @@ internal class DroidMediaPickerService : IMediaPickerService
 
     private suspend fun awaitFromGallery(): Uri? = suspendCancellableCoroutine { cont ->
 
+        SpecificLogMethodStart(::awaitFromGallery.name)
+
         if (getContentLauncher == null)
             throw InvalidOperationException("Please call IMediaPickerService.Initialize() first.")
 
@@ -142,6 +151,8 @@ internal class DroidMediaPickerService : IMediaPickerService
     }
 
     private suspend fun awaitFromCamera(): Uri? = suspendCancellableCoroutine { cont ->
+
+        SpecificLogMethodStart(::awaitFromCamera.name)
 
         if (takePictureLauncher == null)
             throw InvalidOperationException("Please call IMediaPickerService.Initialize() first.")
@@ -181,6 +192,7 @@ internal class DroidMediaPickerService : IMediaPickerService
 
     private fun createCameraOutputUri(): Uri
     {
+        SpecificLogMethodStart(::createCameraOutputUri.name)
         val picturesDir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES) ?: activity.filesDir
         val file = File(
             picturesDir,
@@ -240,6 +252,8 @@ internal class DroidMediaPickerService : IMediaPickerService
 
     private fun copyUriToFile(cr: ContentResolver, uri: Uri, outFile: File)
     {
+        SpecificLogMethodStart(::copyUriToFile.name)
+
         cr.openInputStream(uri)?.use { input ->
             FileOutputStream(outFile).use { output ->
                 input.copyTo(output)
@@ -253,6 +267,8 @@ internal class DroidMediaPickerService : IMediaPickerService
      */
     private fun resizeAndOrCompressToFile(inputFile: File, outputFile: File, maxW: Int?, maxH: Int?, compress: Boolean, quality: Int)
     {
+        SpecificLogMethodStart(::resizeAndOrCompressToFile.name)
+
         val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeFile(inputFile.absolutePath, options)
 
@@ -285,6 +301,8 @@ internal class DroidMediaPickerService : IMediaPickerService
 
     private fun computeScaleToFit(srcW: Int, srcH: Int, maxW: Int?, maxH: Int?): Pair<Int, Int>
     {
+        SpecificLogMethodStart(::computeScaleToFit.name)
+
         if (maxW == null && maxH == null) return srcW to srcH
         val mw = maxW ?: Int.MAX_VALUE
         val mh = maxH ?: Int.MAX_VALUE
@@ -295,6 +313,8 @@ internal class DroidMediaPickerService : IMediaPickerService
 
     private fun calculateInSampleSize(srcW: Int, srcH: Int, reqW: Int, reqH: Int): Int
     {
+        SpecificLogMethodStart(::calculateInSampleSize.name)
+
         var inSampleSize = 1
         if (srcH > reqH || srcW > reqW)
         {
@@ -308,11 +328,15 @@ internal class DroidMediaPickerService : IMediaPickerService
         return inSampleSize
     }
 
-    private fun guessMimeFromPath(path: String): String? = when
+    private fun guessMimeFromPath(path: String): String?
     {
-        path.endsWith(".png", true) -> "image/png"
-        path.endsWith(".webp", true) -> "image/webp"
-        path.endsWith(".jpg", true) || path.endsWith(".jpeg", true) -> "image/jpeg"
-        else -> "image/*"
+        SpecificLogMethodStart(::guessMimeFromPath.name)
+
+       return when {
+            path.endsWith(".png", true) -> "image/png"
+            path.endsWith(".webp", true) -> "image/webp"
+            path.endsWith(".jpg", true) || path.endsWith(".jpeg", true) -> "image/jpeg"
+            else -> "image/*"
+        }
     }
 }

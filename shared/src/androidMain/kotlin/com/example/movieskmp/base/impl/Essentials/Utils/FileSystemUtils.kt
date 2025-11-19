@@ -7,6 +7,11 @@ import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.provider.BaseColumns as IBaseColumns
 import android.webkit.MimeTypeMap
+import com.base.abstractions.Diagnostic.ILogging
+import com.base.abstractions.Diagnostic.ILoggingService
+import com.base.abstractions.Diagnostic.SpecificLoggingKeys
+import com.base.impl.ContainerLocator
+import com.base.impl.Diagnostic.LoggableService
 import com.base.impl.Droid.Utils.CurrentActivity
 import java.io.File as JavaFile
 import java.io.FileInputStream
@@ -16,8 +21,13 @@ import java.util.UUID
 import kotlin.io.path.Path
 import kotlin.io.path.pathString
 
-internal object FileSystemUtils
+internal object FileSystemUtils: LoggableService()
 {
+    init
+    {
+        InitSpecificlogger(SpecificLoggingKeys.LogEssentialServices)
+    }
+
     internal const val EssentialsFolderHash = "2203693cc04e0be7f4f024d5f9499e13"
 
     private const val storageTypePrimary = "primary"
@@ -41,6 +51,7 @@ internal object FileSystemUtils
 
     fun GetTemporaryFile(root: JavaFile, fileName: String): JavaFile
     {
+        SpecificLogMethodStart(::GetTemporaryFile.name, fileName)
         // create the directory for all Essentials files
         val rootDir = JavaFile(root, EssentialsFolderHash)
         rootDir.mkdirs()
@@ -79,6 +90,8 @@ internal object FileSystemUtils
 
     private fun ResolvePhysicalPath(uri: AndroidUri, requireExtendedAccess: Boolean = true): String?
     {
+        SpecificLogMethodStart(::ResolvePhysicalPath.name, uri, requireExtendedAccess)
+
         if (uri.scheme.equals(UriSchemeFile, ignoreCase = true))
         {
             // if it is a file, then return directly
@@ -111,6 +124,7 @@ internal object FileSystemUtils
 
     private fun ResolveDocumentPath(uri: AndroidUri): String?
     {
+        SpecificLogMethodStart(::ResolveDocumentPath.name, uri)
         android.util.Log.d("FileSystemUtils", "Trying to resolve document URI: '$uri'")
 
         val docId = DocumentsContract.getDocumentId(uri)
@@ -202,6 +216,7 @@ internal object FileSystemUtils
 
     private fun ResolveContentPath(uri: AndroidUri): String?
     {
+        SpecificLogMethodStart(::ResolveContentPath.name, uri)
         android.util.Log.d("FileSystemUtils", "Trying to resolve content URI: '$uri'")
 
         val filePath = GetDataFilePath(uri)
@@ -257,6 +272,7 @@ internal object FileSystemUtils
 
     private fun OpenContentStream(uri: AndroidUri): Pair<InputStream?, String?>
     {
+        SpecificLogMethodStart(::OpenContentStream.name, uri)
         val isVirtual = IsVirtualFile(uri)
         if (isVirtual)
         {
@@ -271,6 +287,8 @@ internal object FileSystemUtils
 
     private fun IsVirtualFile(uri: AndroidUri): Boolean
     {
+        SpecificLogMethodStart(::IsVirtualFile.name, uri)
+
         if (!DocumentsContract.isDocumentUri(CurrentActivity.Instance, uri))
             return false
 
@@ -292,6 +310,8 @@ internal object FileSystemUtils
 
     private fun GetVirtualFileStream(uri: AndroidUri): Pair<InputStream?, String?>
     {
+        SpecificLogMethodStart(::GetVirtualFileStream.name, uri)
+
         val mimeTypes = CurrentActivity.Instance.contentResolver.getStreamTypes(uri, "*/*")
         if (mimeTypes != null && mimeTypes.isNotEmpty())
         {
@@ -318,6 +338,7 @@ internal object FileSystemUtils
     {
         try
         {
+            SpecificLogMethodStart(::GetColumnValue.name, contentUri, column, selection, selectionArgs)
             val value = QueryContentResolverColumn(contentUri, column, selection, selectionArgs)
             if (!value.isNullOrEmpty())
                 return value
@@ -336,6 +357,7 @@ internal object FileSystemUtils
         selectionArgs: Array<String>? = null
     ): String?
     {
+        SpecificLogMethodStart(::GetDataFilePath.name, contentUri, selection, selectionArgs)
         val column = MediaStore.MediaColumns.DATA
 
         // ask the content provider for the data column, which may contain the actual file path
@@ -348,6 +370,7 @@ internal object FileSystemUtils
 
     private fun GetFileExtension(uri: AndroidUri): String?
     {
+        SpecificLogMethodStart(::GetFileExtension.name,uri)
         val mimeType = CurrentActivity.Instance.contentResolver.getType(uri)
 
         return if (mimeType != null)
@@ -363,6 +386,7 @@ internal object FileSystemUtils
         selectionArgs: Array<String>? = null
     ): String?
     {
+        SpecificLogMethodStart(::QueryContentResolverColumn.name,contentUri, columnName, selection, selectionArgs)
         var text: String? = null
 
         val projection = arrayOf(columnName)
@@ -388,6 +412,7 @@ internal object FileSystemUtils
 
     internal fun GetShareableFileUri(fullPath: String): AndroidUri
     {
+        SpecificLogMethodStart(::GetShareableFileUri.name,fullPath)
         var sharedFile = JavaFile(fullPath)
         if (!EssentialFileProvider.IsFileInPublicLocation(fullPath))
         {
@@ -417,11 +442,13 @@ internal object FileSystemUtils
 
     private fun hasExtension(filename: String): Boolean
     {
+        SpecificLogMethodStart(::hasExtension.name,filename)
         return filename.contains('.') && filename.lastIndexOf('.') < filename.length - 1
     }
 
     private fun changeExtension(filename: String, extension: String): String
     {
+        SpecificLogMethodStart(::changeExtension.name,filename, extension)
         val lastDot = filename.lastIndexOf('.')
         val nameWithoutExtension = if (lastDot >= 0) filename.substring(0, lastDot) else filename
         val ext = if (extension.startsWith('.')) extension else ".$extension"

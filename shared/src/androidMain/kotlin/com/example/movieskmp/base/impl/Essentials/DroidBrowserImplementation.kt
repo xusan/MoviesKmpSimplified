@@ -5,12 +5,19 @@ import android.content.Intent
 import android.net.Uri as AndroidUri
 import androidx.browser.customtabs.CustomTabsIntent
 import android.os.Build
+import com.base.abstractions.Diagnostic.ILogging
+import com.base.abstractions.Diagnostic.SpecificLoggingKeys
 import com.base.abstractions.Essentials.Browser.*
+import com.base.impl.Diagnostic.LoggableService
 import com.base.impl.Droid.Essentials.Utils.PlatformUtils
 import com.base.impl.Droid.Utils.*
 
-internal class DroidBrowserImplementation : IBrowser
+internal class DroidBrowserImplementation : LoggableService(), IBrowser
 {
+    init {
+        InitSpecificlogger(SpecificLoggingKeys.LogEssentialServices)
+    }
+
     override suspend fun OpenAsync(uri: String): Boolean
     {
         return this.OpenAsync(uri, BrowserLaunchOptions())
@@ -18,6 +25,7 @@ internal class DroidBrowserImplementation : IBrowser
 
     override suspend fun OpenAsync(uri: String, options: BrowserLaunchOptions): Boolean
     {
+        SpecificLogMethodStart("OpenAsync", uri)
         val nativeUri = AndroidUri.parse(uri)
 
         when (options.LaunchMode)
@@ -33,6 +41,8 @@ internal class DroidBrowserImplementation : IBrowser
 
     private fun LaunchChromeTabs(options: BrowserLaunchOptions, nativeUri: AndroidUri?)
     {
+        SpecificLogMethodStart(::LaunchChromeTabs.name, options, nativeUri)
+        specificLogger.Log("DroidBrowserImplementation.LaunchChromeTabs(...)")
         val tabsBuilder = CustomTabsIntent.Builder()
         tabsBuilder.setShowTitle(true)
 
@@ -77,6 +87,7 @@ internal class DroidBrowserImplementation : IBrowser
 
     private fun LaunchExternalBrowser(options: BrowserLaunchOptions, nativeUri: AndroidUri?)
     {
+        SpecificLogMethodStart(::LaunchExternalBrowser.name, options, nativeUri)
         val intent = Intent(Intent.ACTION_VIEW, nativeUri)
         var flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
 
@@ -88,13 +99,11 @@ internal class DroidBrowserImplementation : IBrowser
 
         intent.setFlags(flags)
 
-        if (!PlatformUtils.IsIntentSupported(intent))
+        if (!PlatformUtils.IsIntentSupported(intent, specificLogger))
             throw UnsupportedOperationException("This feature is not supported on this Device.")
 
         CurrentActivity.Instance.startActivity(intent)
     }
-
-
 }
 
 

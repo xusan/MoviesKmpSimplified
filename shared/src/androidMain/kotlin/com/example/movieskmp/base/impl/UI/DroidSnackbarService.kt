@@ -5,17 +5,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.TextView
+import com.base.abstractions.Diagnostic.SpecificLoggingKeys
 import com.base.abstractions.Event
 import com.base.abstractions.UI.ISnackbarService
 import com.base.abstractions.UI.SeverityType
+import com.base.impl.Diagnostic.LoggableService
 import com.base.impl.Droid.Utils.CurrentActivity
 import com.base.impl.Droid.Utils.ToAndroid
 import com.base.impl.UI.SnackbarColors.GetBackgroundColor
 import com.base.impl.UI.SnackbarColors.GetTextColor
 import com.example.movieskmp.shared.R
 
-internal class DroidSnackbarService : ISnackbarService
+internal class DroidSnackbarService : LoggableService(), ISnackbarService
 {
+    init
+    {
+        InitSpecificlogger(SpecificLoggingKeys.LogUIServices)
+    }
+
     private lateinit var rootView: ViewGroup
     private lateinit var snackbarView: View
     private var isVisible: Boolean = false
@@ -34,6 +41,7 @@ internal class DroidSnackbarService : ISnackbarService
 
     override fun Show(message: String, severityType: SeverityType, duration: Int)
     {
+        SpecificLogMethodStart("Show", message, severityType, duration)
         val activity = CurrentActivity.Instance
         val inflater = LayoutInflater.from(activity)
 
@@ -77,6 +85,7 @@ internal class DroidSnackbarService : ISnackbarService
 
     fun Hide()
     {
+        SpecificLogMethodStart(::Hide.name)
         snackbarView.post {
             val hideY = GetTranslateY(snackbarView)
             snackbarView.animate()
@@ -93,6 +102,7 @@ internal class DroidSnackbarService : ISnackbarService
 
     private fun GetTranslateY(view: View): Float
     {
+        SpecificLogMethodStart(::GetTranslateY.name)
         val hideY = -(view.height + GetTopMargin(snackbarView))
 
         return hideY
@@ -100,7 +110,7 @@ internal class DroidSnackbarService : ISnackbarService
 
     private fun GetTopMargin(view: View): Float
     {
-
+        SpecificLogMethodStart(::GetTopMargin.name)
         if (view.layoutParams is ViewGroup.MarginLayoutParams)
         {
             val marginParams = view.layoutParams as ViewGroup.MarginLayoutParams
