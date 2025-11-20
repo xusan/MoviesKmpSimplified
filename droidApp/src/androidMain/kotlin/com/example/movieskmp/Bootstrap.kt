@@ -35,10 +35,8 @@ class Bootstrap : KoinComponent
             single { PageInjectedServices() }
             single<IErrorTrackingService> { MainApplication.Instance.sentryErrorTracker }
             single<NavRegistrar> { pageRegistrar }
-            //Registrer pages
         }
         //register pages
-
         pageRegistrar.RegisterPageForNavigation<LoginPageViewModel, LoginPage>({ LoginPage()}, { LoginPageViewModel(get())})
         pageRegistrar.RegisterPageForNavigation<MoviesPageViewModel, MoviesPage>({ MoviesPage()}, { (MoviesPageViewModel(get()))})
         pageRegistrar.RegisterPageForNavigation<MovieDetailPageViewModel, MovieDetailPage>({ MovieDetailPage()}, { (MovieDetailPageViewModel(get()))})

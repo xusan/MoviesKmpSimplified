@@ -14,6 +14,7 @@ import com.base.abstractions.Repository.IRepository
 import com.example.movieskmp.domain.AppServices.IMovieService
 import com.example.movieskmp.domain.AppServices.MoviesService
 import com.example.movieskmp.domain.Infasructures.REST.IMovieRestService
+import com.example.movieskmp.domain.Infasructures.REST.MockMovieRestService
 import com.example.movieskmp.domain.Infasructures.REST.MovieRestService
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -36,14 +37,10 @@ class AppCommonRegistrar
             single<IRepoMapper<Movie, MovieTb>> { RepoMovieMapper() }
             single<IRepository<Movie>> { MovieRepository() }
             //REST
-            single<IMovieRestService> { MovieRestService() }
+            //single<IMovieRestService> { MovieRestService() }
+            single<IMovieRestService> { MockMovieRestService() }
             //common
             single<IInfrastructureServices> { MyInfrastructureService() }
-//            //register and call init for MyErrorTrackingService
-//            single<IErrorTrackingService>(createdAtStart = true)
-//            {
-//                MyErrorTrackingService().apply {Initilize()}
-//            }
         }
 
         fun RegisterAppService(): Module = module()
