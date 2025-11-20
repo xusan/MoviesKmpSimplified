@@ -6,12 +6,19 @@ import androidx.core.content.FileProvider
 import android.net.Uri as AndroidUri
 import java.io.File
 import android.os.Build
+import com.base.abstractions.Diagnostic.ILogging
+import com.base.abstractions.Diagnostic.ILoggingService
+import com.base.abstractions.Diagnostic.SpecificLoggingKeys
+import com.base.impl.ContainerLocator
 import com.base.impl.Droid.Utils.CurrentActivity
 
 internal class EssentialFileProvider : FileProvider()
 {
     companion object
     {
+        lateinit var specificLogger: ILogging
+        var isLoggerInitialized = false
+
         internal var AlwaysFailExternalMediaAccess: Boolean = false
 
         // This allows us to override the default temporary file location of Preferring external but falling back to internal
@@ -23,6 +30,9 @@ internal class EssentialFileProvider : FileProvider()
 
         internal fun GetTemporaryRootDirectory(): File
         {
+            InitLogger()
+
+            specificLogger.LogMethodStarted("EssentialFileProvider", "GetTemporaryRootDirectory")
             // If we specifically want the internal storage, no extra checks are needed, we have permission
             if (TemporaryLocation == FileProviderLocation.Internal)
                 return CurrentActivity.Instance.cacheDir
@@ -49,11 +59,19 @@ internal class EssentialFileProvider : FileProvider()
                 CurrentActivity.Instance.cacheDir
         }
 
-        private fun IsMediaMounted(location: File): Boolean =
-            Environment.getExternalStorageState(location) == Environment.MEDIA_MOUNTED
+        private fun IsMediaMounted(location: File): Boolean
+        {
+            InitLogger()
+
+            specificLogger.LogMethodStarted("EssentialFileProvider", "IsMediaMounted")
+            return Environment.getExternalStorageState(location) == Environment.MEDIA_MOUNTED
+        }
 
         internal fun IsFileInPublicLocation(filename: String): Boolean
         {
+            InitLogger()
+
+            specificLogger.LogMethodStarted("EssentialFileProvider", "IsFileInPublicLocation")
             // get the Android path, we use "CanonicalPath" instead of "AbsolutePath"
             // because we want to resolve any ".." and links/redirects
             val file = File(filename)
@@ -98,8 +116,22 @@ internal class EssentialFileProvider : FileProvider()
             return false
         }
 
-        internal fun GetUriForFile(file: File): AndroidUri =
-            androidx.core.content.FileProvider.getUriForFile(CurrentActivity.Instance, Authority, file)
+        internal fun GetUriForFile(file: File): AndroidUri
+        {
+            InitLogger()
+            specificLogger.LogMethodStarted("EssentialFileProvider", "GetUriForFile")
+            return androidx.core.content.FileProvider.getUriForFile(CurrentActivity.Instance, Authority, file)
+        }
+
+        fun InitLogger()
+        {
+            if(isLoggerInitialized == false)
+            {
+                val loggingService = ContainerLocator.Resolve<ILoggingService>()
+                specificLogger = loggingService.CreateSpecificLogger(SpecificLoggingKeys.LogEssentialServices)
+                isLoggerInitialized = true
+            }
+        }
     }
 }
 

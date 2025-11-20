@@ -117,6 +117,11 @@ internal class DroidLogbackFileLogger : KoinComponent, IFileLogger
         return path.absolutePath
     }
 
+    override fun GetCurrentLogFileName(): String
+    {
+        return currentLogPath
+    }
+
     /**
      * Keep only last 7 days folders.
      */

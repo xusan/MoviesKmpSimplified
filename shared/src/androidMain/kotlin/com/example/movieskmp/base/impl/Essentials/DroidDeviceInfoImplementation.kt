@@ -5,13 +5,21 @@ import android.content.res.Configuration
 import android.os.Build
 import android.provider.Settings
 import com.base.abstractions.Common.VersionInfo
+import com.base.abstractions.Diagnostic.ILogging
+import com.base.abstractions.Diagnostic.SpecificLoggingKeys
 import com.base.abstractions.Essentials.Device.*
+import com.base.impl.Diagnostic.LoggableService
 import com.base.impl.Droid.Utils.CurrentActivity
 import kotlin.math.min
 
-internal class DroidDeviceInfoImplementation : IDeviceInfo
+internal class DroidDeviceInfoImplementation : LoggableService(), IDeviceInfo
 {
     val tabletCrossover = 600
+
+    init
+    {
+        InitSpecificlogger(SpecificLoggingKeys.LogEssentialServices)
+    }
 
     override val Model: String
         get() = Build.MODEL
@@ -22,6 +30,7 @@ internal class DroidDeviceInfoImplementation : IDeviceInfo
     override val Name: String
         get()
         {
+            specificLogger.Log("DroidDeviceInfoImplementation.Name")
             // DEVICE_NAME added in System.Global in API level 25
             // https://developer.android.com/reference/android/provider/Settings.Global#DEVICE_NAME
             var name = GetSystemSetting("device_name", true)
@@ -42,6 +51,7 @@ internal class DroidDeviceInfoImplementation : IDeviceInfo
     override val Idiom: DeviceIdiom
         get()
         {
+            specificLogger.Log("DroidDeviceInfoImplementation.Idiom")
             var currentIdiom = DeviceIdiom.Unknown
 
             // first try UIModeManager
@@ -87,6 +97,8 @@ internal class DroidDeviceInfoImplementation : IDeviceInfo
     override val DeviceType: DeviceTypeEnum
         get()
         {
+            specificLogger.Log("DroidDeviceInfoImplementation.DeviceType")
+
             val isEmulator =
                 (Build.BRAND.startsWith("generic", ignoreCase = false) && Build.DEVICE.startsWith("generic", ignoreCase = false)) ||
                         Build.FINGERPRINT.startsWith("generic", ignoreCase = false) ||
@@ -128,6 +140,8 @@ internal class DroidDeviceInfoImplementation : IDeviceInfo
 
     fun GetSystemSetting(name: String, isGlobal: Boolean = false): String?
     {
+        SpecificLogMethodStart(::GetSystemSetting.name, name, isGlobal)
+
         if (isGlobal)
             return Settings.Global.getString(CurrentActivity.Instance.contentResolver, name)
         else

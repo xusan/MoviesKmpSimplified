@@ -24,14 +24,17 @@ class LoginPage() : DroidLifecyclePage()
         binding.apply {
 
             txtLogin.addTextChangedListener {
+                SpecificLogMethodStart("txtLogin_Changed", txtLogin.text.toString())
                 viewModel.Login = txtLogin.text.toString()
             }
 
             txtPassword.addTextChangedListener {
+                SpecificLogMethodStart("txtPassword_Changed", txtLogin.text.toString())
                 viewModel.Password = txtPassword.text.toString()
             }
 
             btnSubmit.setOnClickListener {
+                SpecificLogMethodStart("btnSubmit_Clicked")
                 viewModel.SubmitCommand.Execute(null)
             }
         }

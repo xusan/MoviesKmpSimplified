@@ -7,18 +7,27 @@ import android.os.Build
 import android.os.Parcelable
 import android.text.Html
 import android.text.Spanned
+import com.base.abstractions.Diagnostic.ILogging
+import com.base.abstractions.Diagnostic.SpecificLoggingKeys
 import com.base.abstractions.Essentials.Email.*
+import com.base.impl.Diagnostic.LoggableService
 import com.base.impl.Droid.Essentials.Utils.*
 import com.base.impl.Droid.Utils.CurrentActivity
 
-internal class DroidEmailImplementation : IEmail
+internal class DroidEmailImplementation : LoggableService(), IEmail
 {
+    init
+    {
+        InitSpecificlogger(SpecificLoggingKeys.LogEssentialServices)
+    }
 
     override val IsComposeSupported: Boolean
-        get() = PlatformUtils.IsIntentSupported(CreateIntent(testEmail))
+        get() = PlatformUtils.IsIntentSupported(CreateIntent(testEmail), specificLogger)
 
     override fun Compose(message: EmailMessage)
     {
+        SpecificLogMethodStart(::Compose.name)
+
         if (!IsComposeSupported)
             throw UnsupportedOperationException("Email composing is not supported in this device.")
 
@@ -34,6 +43,8 @@ internal class DroidEmailImplementation : IEmail
 
     fun CreateIntent(message: EmailMessage): Intent
     {
+        SpecificLogMethodStart(::CreateIntent.name)
+
         val action = when (message?.Attachments?.size ?: 0)
         {
             0 -> Intent.ACTION_SENDTO
@@ -95,7 +106,6 @@ internal class DroidEmailImplementation : IEmail
 
         return intent
     }
-
 }
 
 

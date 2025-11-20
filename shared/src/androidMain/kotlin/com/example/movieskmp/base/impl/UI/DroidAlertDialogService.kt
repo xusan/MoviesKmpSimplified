@@ -1,16 +1,24 @@
 package com.base.impl.Droid.UI
 import android.app.AlertDialog
 import android.content.DialogInterface
+import com.base.abstractions.Diagnostic.SpecificLoggingKeys
 import com.base.abstractions.UI.IAlertDialogService
+import com.base.impl.Diagnostic.LoggableService
 import com.base.impl.Droid.Utils.CurrentActivity
 import com.base.impl.UI.ActionSheetArguments
 import com.base.impl.UI.AlertArguments
 import kotlinx.coroutines.*
 
-internal class DroidAlertDialogService : IAlertDialogService
+internal class DroidAlertDialogService : LoggableService(), IAlertDialogService
 {
+    init
+    {
+        InitSpecificlogger(SpecificLoggingKeys.LogUIServices)
+    }
+
     override suspend fun ConfirmAlert(title: String, message: String, vararg buttons: String): Boolean
     {
+        SpecificLogMethodStart(::ConfirmAlert.name, title, message, buttons)
         val accept = buttons.elementAtOrNull(0)
         val cancel = buttons.elementAtOrNull(1)
         val arguments = AlertArguments(title, message, accept, cancel)
@@ -22,6 +30,8 @@ internal class DroidAlertDialogService : IAlertDialogService
 
     override suspend fun DisplayAlert(title: String, message: String, cancel: String)
     {
+        SpecificLogMethodStart(::DisplayAlert.name, title, message, cancel)
+
         val arguments = AlertArguments(title, message, null, cancel)
         this.PostExecuteAlert(arguments)
 
@@ -35,6 +45,7 @@ internal class DroidAlertDialogService : IAlertDialogService
 
     override suspend fun DisplayActionSheet(title: String, cancel: String?, destruction: String?, vararg buttons: String): String?
     {
+        SpecificLogMethodStart("DisplayActionSheet", title, cancel, destruction, buttons)
         val arguments = ActionSheetArguments(title, cancel, destruction, buttons.toList())
 
         this.PostExecuteAlertSheet(arguments)
@@ -44,6 +55,7 @@ internal class DroidAlertDialogService : IAlertDialogService
 
     private fun PostExecuteAlert(arguments: AlertArguments)
     {
+        SpecificLogMethodStart(::PostExecuteAlert.name)
         CoroutineScope(Dispatchers.Main).launch {
             delay(10)
 
@@ -62,6 +74,7 @@ internal class DroidAlertDialogService : IAlertDialogService
 
     private fun PostExecuteAlertSheet(arguments: ActionSheetArguments)
     {
+        SpecificLogMethodStart(::PostExecuteAlertSheet.name)
         CoroutineScope(Dispatchers.Main).launch {
             delay(10)
 

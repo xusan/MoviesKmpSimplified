@@ -11,31 +11,35 @@ open class NavigatingBaseViewModel(val injectedServices: InjectedService) : Base
 
     override fun OnNavigatedFrom(parameters: INavigationParameters)
     {
-
+        LogVirtualBaseMethod(::OnNavigatedFrom.name)
     }
 
     override fun OnNavigatedTo(parameters: INavigationParameters)
     {
-
+        LogVirtualBaseMethod(::OnNavigatedTo.name)
     }
 
     fun GetCurrentPageViewModel() : NavigatingBaseViewModel
     {
+        LogVirtualBaseMethod(::GetCurrentPageViewModel.name)
         return this.injectedServices.NavigationService.GetCurrentPageModel() as NavigatingBaseViewModel;
     }
 
     suspend fun Navigate(name: String, parameters: INavigationParameters? = null, useModalNavigation: Boolean = false, animated: Boolean = true, wrapIntoNav: Boolean = false)
     {
+        LogVirtualBaseMethod(::Navigate.name+ "(name=$name, ...)")
         this.injectedServices.NavigationService.Navigate(name,parameters,useModalNavigation,animated,wrapIntoNav)
     }
 
     suspend fun NavigateToRoot(parameters: INavigationParameters? = null)
     {
+        LogVirtualBaseMethod(::NavigateToRoot.name)
         this.injectedServices.NavigationService.NavigateToRoot(parameters)
     }
 
     suspend fun SkipAndNavigate(skipCount: Int, route: String, parameters: INavigationParameters? = null)
     {
+        LogVirtualBaseMethod(::SkipAndNavigate.name + "(skipCount=$skipCount, route=$route, ...)")
         var skip: String = ""
         for (i in 0 until skipCount) //for (int i = 0; i < skipCount; i++)
         {
@@ -47,17 +51,20 @@ open class NavigatingBaseViewModel(val injectedServices: InjectedService) : Base
 
     suspend fun NavigateAndMakeRoot(name: String, parameters: INavigationParameters? = null, useModalNavigation: Boolean = false, animated: Boolean = true)
     {
+        LogVirtualBaseMethod(::NavigateAndMakeRoot.name + "(name = $name, ...)")
         val newRoot = "/NavigationPage/$name";
         this.Navigate(name, parameters,useModalNavigation, animated);
     }
 
     suspend fun NavigateBack(parameters: INavigationParameters? = null)
     {
+        LogVirtualBaseMethod(::NavigateBack.name)
         Navigate("../", parameters);
     }
 
     suspend fun BackToRootAndNavigate(name: String, parameters: INavigationParameters? = null)
     {
+        LogVirtualBaseMethod(::BackToRootAndNavigate.name+"(name = $name, ...)")
         val navStack = injectedServices.NavigationService.GetNavStackModels()
             .map { it.toString().substringAfterLast('.') }
 
@@ -83,6 +90,7 @@ open class NavigatingBaseViewModel(val injectedServices: InjectedService) : Base
 
     protected fun <T> GetParameter(parameters: INavigationParameters, key: String) : T?
     {
+        LogVirtualBaseMethod("GetParameter(key = $key)")
         if (parameters.ContainsKey(key))
         {
             return parameters.GetValue<T>(key);
@@ -95,10 +103,16 @@ open class NavigatingBaseViewModel(val injectedServices: InjectedService) : Base
 
     protected fun <T> GetParameter(parameters: INavigationParameters, key: String, setter: (T?)-> Unit)
     {
+        LogVirtualBaseMethod("GetParameter(key = $key, setter())")
         if (parameters.ContainsKey(key))
         {
             val value = parameters.GetValue<T>(key);
             setter(value)
         }
+    }
+
+    protected fun LogVirtualBaseMethod(methodName: String)
+    {
+        injectedServices.LoggingService.Log("${this::class.simpleName}.${methodName}() (from base)");
     }
 }

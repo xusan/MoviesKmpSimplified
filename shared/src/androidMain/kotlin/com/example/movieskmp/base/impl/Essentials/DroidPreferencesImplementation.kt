@@ -4,21 +4,29 @@ package com.base.impl.Droid.Essentials
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import com.base.abstractions.Diagnostic.SpecificLoggingKeys
 import com.base.abstractions.Essentials.IPreferences
+import com.base.impl.Diagnostic.LoggableService
 import com.base.impl.Droid.Utils.CurrentActivity
 import java.util.Date
 import java.util.Locale
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
-internal class DroidPreferencesImplementation : IPreferences
+internal class DroidPreferencesImplementation : LoggableService(), IPreferences
 {
     private val locker = Any()
+
+//    init
+//    {
+//        InitSpecificlogger(SpecificLoggingKeys.LogEssentialServices)
+//    }
 
     override fun ContainsKey(key: String, sharedName: String?): Boolean
     {
         synchronized(locker)
         {
+            //SpecificLogMethodStart(::ContainsKey.name, key, sharedName)
             val sharedPreferences = GetSharedPreferences(sharedName)
             return sharedPreferences.contains(key)
         }
@@ -28,6 +36,7 @@ internal class DroidPreferencesImplementation : IPreferences
     {
         synchronized(locker)
         {
+            //SpecificLogMethodStart(::Remove.name, key, sharedName)
             val sharedPreferences = GetSharedPreferences(sharedName)
             val editor = sharedPreferences.edit()
             editor.remove(key).apply()
@@ -38,6 +47,7 @@ internal class DroidPreferencesImplementation : IPreferences
     {
         synchronized(locker)
         {
+            //SpecificLogMethodStart(::Clear.name, sharedName)
             val sharedPreferences = GetSharedPreferences(sharedName)
             val editor = sharedPreferences.edit()
             editor.clear().apply()
@@ -48,6 +58,7 @@ internal class DroidPreferencesImplementation : IPreferences
     {
         synchronized(locker)
         {
+            //SpecificLogMethodStart("Set", key, sharedName)
             val sharedPreferences = GetSharedPreferences(sharedName)
             val editor = sharedPreferences.edit()
             if (value == null)
@@ -58,25 +69,39 @@ internal class DroidPreferencesImplementation : IPreferences
             {
                 when (value)
                 {
-                    is String ->
+                    is String -> {
+                        //SpecificLogMethodStart("Set", key, value, sharedName)
                         editor.putString(key, value)
-                    is Int ->
+                    }
+                    is Int -> {
+                        //SpecificLogMethodStart("Set", key, value, sharedName)
                         editor.putInt(key, value)
-                    is Boolean ->
+                    }
+                    is Boolean -> {
+                        //SpecificLogMethodStart("Set", key, value, sharedName)
                         editor.putBoolean(key, value)
-                    is Long ->
+                    }
+                    is Long -> {
+                        //SpecificLogMethodStart("Set", key, value, sharedName)
                         editor.putLong(key, value)
+                    }
                     is Double ->
                     {
+                        //SpecificLogMethodStart("Set", key, value, sharedName)
                         val valueString = String.format(Locale.ROOT, "%s", value)
                         editor.putString(key, valueString)
                     }
-                    is Float ->
+                    is Float -> {
+                        //SpecificLogMethodStart("Set", key, value, sharedName)
                         editor.putFloat(key, value)
-                    is Date ->
+                    }
+                    is Date -> {
+                        //SpecificLogMethodStart("Set", key, value.time, sharedName)
                         editor.putLong(key, value.time)
-                    is OffsetDateTime ->
-                        editor.putString(key, value.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                    }
+//                    is OffsetDateTime -> {
+//                        editor.putString(key, value.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+//                    }
                 }
             }
             editor.apply()
@@ -87,6 +112,8 @@ internal class DroidPreferencesImplementation : IPreferences
     {
         synchronized(locker)
         {
+            //SpecificLogMethodStart("Get", key, sharedName)
+
             var value: Any? = null
             val sharedPreferences = GetSharedPreferences(sharedName)
             if (defaultValue == null)
@@ -134,21 +161,22 @@ internal class DroidPreferencesImplementation : IPreferences
                         val encodedValue = sharedPreferences.getLong(key, defaultValue.time)
                         value = Date(encodedValue)
                     }
-                    is OffsetDateTime ->
-                    {
-                        val savedDateTimeOffset = sharedPreferences.getString(key, defaultValue.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
-                        try
-                        {
-                            value = OffsetDateTime.parse(savedDateTimeOffset, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-                        }
-                        catch (e: Exception)
-                        {
-                            value = defaultValue
-                        }
-                    }
+//                    is OffsetDateTime ->
+//                    {
+//                        val savedDateTimeOffset = sharedPreferences.getString(key, defaultValue.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+//                        try
+//                        {
+//                            value = OffsetDateTime.parse(savedDateTimeOffset, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+//                        }
+//                        catch (e: Exception)
+//                        {
+//                            value = defaultValue
+//                        }
+//                    }
                 }
             }
 
+            //specificLogger.Log("DroidPreferencesImplementation.Get($key) -> $value")
             @Suppress("UNCHECKED_CAST")
             return value as T
         }
