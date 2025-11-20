@@ -37,8 +37,8 @@ class AppCommonRegistrar
             single<IRepoMapper<Movie, MovieTb>> { RepoMovieMapper() }
             single<IRepository<Movie>> { MovieRepository() }
             //REST
-            //single<IMovieRestService> { MovieRestService() }
-            single<IMovieRestService> { MockMovieRestService() }
+            single<IMovieRestService> { MovieRestService() }
+            //single<IMovieRestService> { MockMovieRestService() }
             //common
             single<IInfrastructureServices> { MyInfrastructureService() }
         }
