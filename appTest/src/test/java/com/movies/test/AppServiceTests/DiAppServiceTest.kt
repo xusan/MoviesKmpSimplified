@@ -8,8 +8,8 @@ import com.base.abstractions.Essentials.IPreferences
 import com.base.abstractions.Repository.IRepository
 import com.example.movieskmp.AppCommonRegistrar
 import com.example.movieskmp.domain.Infasructures.REST.IMovieRestService
-import com.movies.test._Impl.MockLogger
-import com.movies.test._Impl.MockRepository
+import com.movies.test.Impl.MockLogger
+import com.movies.test.Impl.MockRepository
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk

@@ -18,9 +18,9 @@ import com.base.abstractions.UI.ISnackbarService
 import com.base.mvvm.Helpers.AsyncCommand
 import com.base.mvvm.Navigation.IPageNavigationService
 import com.example.movieskmp.domain.AppServices.IMovieService
-import com.movies.test._Impl.MockEventAgregator
-import com.movies.test._Impl.MockLogger
-import com.movies.test._Impl.MockSnackebar
+import com.movies.test.Impl.MockEventAgregator
+import com.movies.test.Impl.MockLogger
+import com.movies.test.Impl.MockSnackebar
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk

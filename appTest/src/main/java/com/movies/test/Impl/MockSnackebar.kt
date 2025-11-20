@@ -1,4 +1,4 @@
-package com.movies.test._Impl
+package com.movies.test.Impl
 
 import com.base.abstractions.Event
 import com.base.abstractions.UI.ISnackbarService

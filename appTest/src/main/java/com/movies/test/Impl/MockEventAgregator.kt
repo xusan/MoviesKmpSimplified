@@ -1,4 +1,4 @@
-package com.movies.test._Impl
+package com.movies.test.Impl
 
 import com.base.abstractions.Messaging.IMessageEvent
 import com.base.abstractions.Messaging.IMessagesCenter

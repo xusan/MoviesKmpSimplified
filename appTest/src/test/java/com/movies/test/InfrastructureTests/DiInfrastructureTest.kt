@@ -7,8 +7,8 @@ import com.base.abstractions.Essentials.IPreferences
 import com.base.abstractions.IConstant
 import com.example.movieskmp.AppCommonRegistrar
 import com.example.movieskmp.base.BaseCommonRegistrar
-import com.movies.test._Impl.ConstImpl
-import com.movies.test._Impl.MockLogger
+import com.movies.test.Impl.ConstImpl
+import com.movies.test.Impl.MockLogger
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers

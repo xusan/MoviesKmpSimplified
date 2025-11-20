@@ -1,4 +1,4 @@
-package com.movies.test._Impl
+package com.movies.test.Impl
 
 import com.base.abstractions.Diagnostic.ILogging
 import com.base.abstractions.Diagnostic.ILoggingService

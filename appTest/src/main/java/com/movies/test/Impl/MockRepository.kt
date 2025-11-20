@@ -1,4 +1,4 @@
-package com.movies.test._Impl
+package com.movies.test.Impl
 
 import com.app.abstraction.domain.Movie
 import com.base.abstractions.Repository.IRepository
