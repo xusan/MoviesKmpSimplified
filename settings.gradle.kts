@@ -31,3 +31,4 @@ dependencyResolutionManagement {
 
 include(":droidApp")
 include(":shared")
+include(":appTest")
