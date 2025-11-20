@@ -7,6 +7,7 @@ import com.base.abstractions.Event
 import com.base.impl.ContainerLocator
 import io.sentry.Attachment
 import io.sentry.Hint
+import io.sentry.Sentry
 import io.sentry.SentryEvent
 import io.sentry.SentryOptions
 import io.sentry.android.core.SentryAndroid
@@ -61,23 +62,23 @@ class SentryErrorTracking(val application: Application) : IErrorTrackingService
 
     override fun TrackError(ex: Throwable, attachment: ByteArray?, additionalData: Map<String, String>?)
     {
-//        try
-//        {
-//            if (attachment != null)
-//            {
-//                Sentry.captureException(ex, { scope ->
-//
-//                    scope.addAttachment(Attachment(attachment, "appLog_${System.currentTimeMillis()}.zip", "application/x-zip-compressed"))
-//                });
-//            }
-//            else
-//            {
-//                Sentry.captureException(ex);
-//            }
-//        }
-//        catch (error: Throwable)
-//        {
-//            OnServiceError.Invoke(error);
-//        }
+        try
+        {
+            if (attachment != null)
+            {
+                Sentry.captureException(ex, { scope ->
+
+                    scope.addAttachment(Attachment(attachment, "appLog_${System.currentTimeMillis()}.zip", "application/x-zip-compressed"))
+                });
+            }
+            else
+            {
+                Sentry.captureException(ex);
+            }
+        }
+        catch (error: Throwable)
+        {
+            OnServiceError.Invoke(error);
+        }
     }
 }
