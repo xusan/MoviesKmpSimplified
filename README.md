@@ -94,13 +94,15 @@ The UI layer is implemented using **fully native frameworks** and communicates w
 - Native Kotlin
 - XML layouts
 - MVVM pattern
-- Platform-specific navigation and lifecycle
+- Navigation based on **FragmentManager**
+- Lifecycle handling based on native Fragment / Activity callbacks
 
 ### iOS
 - Native Swift
 - UIKit
 - MVVM pattern
-- Platform-specific navigation and rendering
+- Navigation based on **UINavigationController**
+- Lifecycle handling based on native UIViewController lifecycle
 
 UI responsibility:
 - Rendering
