@@ -39,7 +39,7 @@ This demo mobile application targets **iOS** and **Android** using:
 - **Native Swift (iOS)**
 
 - ~**70% shared business logic (KMP)**
-- ~**15% native UI code per platform**
+- ~**30% native UI code**
 - Fully **native UI** on both platforms
 - Clear separation between UI, ViewModels, Services, and Domain logic
 
