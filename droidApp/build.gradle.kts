@@ -91,7 +91,7 @@ android {
 sentry {
     // Auto-Install Sentry dependencies
     autoInstallation {
-        enabled = false
+        enabled = true
     }
 
     //Read from the environment variable
