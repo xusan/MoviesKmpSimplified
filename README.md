@@ -1,9 +1,6 @@
----
-
 ## About Me
 
 I am a **Mobile Application Developer** with **15+ years of professional experience** building high-quality, scalable native and cross-platform iOS and Android applications.
-
 This repository reflects my approach to designing **robust, testable, and scalable** mobile solutions using modern architectural patterns.
 
 **Contact:**  
