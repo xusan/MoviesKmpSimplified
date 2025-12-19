@@ -11,7 +11,7 @@ This repository reflects my approach to designing **robust, testable, and scalab
 
 ---
 
-## Project Overview
+## Project Overview – MoviesDemo (KMP – Fragment / UIKit)
 
 This project demonstrates how to build **fully native iOS and Android applications** using **Kotlin Multiplatform Mobile (KMP)** for shared business logic, while keeping **UI 100% native** on each platform.
 
@@ -28,6 +28,21 @@ The demo shows how:
 
 The goal of this project is to demonstrate my experience in creating **beautiful**, **clear**, and **maintainable** mobile applications that can **scale to large, long-living products** without architectural bottlenecks.
 
+### Other Implementations
+
+- **MoviesDemo (KMP – Jetpack Compose / SwiftUI)**  
+  https://github.com/xusan/movieskmpcompose
+  
+- **MoviesDemo (Swift – SwiftUI)**  
+  https://github.com/devperson/MoviesSwift
+  
+- **MoviesDemo (.NET – Fragment / UIKit)**  
+  https://github.com/devperson/MyDemoApp
+  
+> All *MoviesDemo* implementations have **identical domain models, architecture, and features**.
+> The repositories differ only in **platform technology and UI framework**, demonstrating how the same
+> core architecture can support multiple native UI approaches without changes to the business layer.
+  
 ---
 
 ## Application Overview
@@ -99,7 +114,7 @@ The UI layer is implemented using **fully native frameworks** and communicates w
 
 ### iOS
 - Native Swift
-- UIKit
+- UIKit + AsyncDisplayKit (Texture)
 - MVVM pattern
 - Navigation based on **UINavigationController**
 - Lifecycle handling based on native UIViewController lifecycle
