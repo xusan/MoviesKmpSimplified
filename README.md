@@ -13,9 +13,7 @@ This repository reflects my approach to designing **robust, testable, and scalab
 
 ## Project Overview – MoviesDemo (KMP – Fragment / UIKit)
 
-This project demonstrates how to build **fully native iOS and Android applications** using **Kotlin Multiplatform Mobile (KMP)** for shared business logic, while keeping **UI 100% native** on each platform.
-
-The project applies proven architectural patterns such as **MVVM**, **ViewModel-driven navigation**, **Domain-Driven Design (DDD)**, and **Dependency Injection (DI)**. Additionally, each application layer is instrumented with logging, providing clear traceability across UI, ViewModel, Service, and Domain layers, which improves maintainability, debugging, and long-term support.
+This project demonstrates how to build **fully native iOS and Android applications** using **Kotlin Multiplatform Mobile (KMP)** for shared business logic, while keeping **UI 100% native** on each platform. The project applies proven architectural patterns such as **MVVM**, **ViewModel-driven navigation**, **Domain-Driven Design (DDD)**, and **Dependency Injection (DI)**.Additionally, each application layer is instrumented with logging across UI, ViewModel, Service, and Domain layers, which improves maintainability and long-term support.
 
 The demo shows how:
 - Native iOS (Swift) and Android (Kotlin) apps can share **most of the business logic**
