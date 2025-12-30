@@ -19,7 +19,7 @@ internal class AppLogExporter : LoggableService(), IAppLogExporter
 {
     private val directoryService: IDirectoryService by inject()
     private val shareFileService: IShare by inject()
-    private val KyChat_Logs = "KyChat_Logs"
+    private val KyChat_Logs = "MoviesApp_Logs"
 
 
 

@@ -27,10 +27,6 @@ class MovieRepoTest : DeviceInfrastructureTest()
         movieRepo.AddAsync(movieEntity);
         assertTrue(movieEntity.Id > 0, "new movieEntity id doesn't increment")
         newId = movieEntity.Id;
-
-        val logger = get<ILoggingService>();
-        val filePath = logger.GetLogsFolder()
-        logger.Log("App Log folder: $filePath")
     }
 
     @Test
