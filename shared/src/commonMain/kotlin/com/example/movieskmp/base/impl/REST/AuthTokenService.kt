@@ -66,7 +66,7 @@ internal class AuthTokenService : LoggableService(), IAuthTokenService
     override suspend fun GetAuthTokenDetails(): AuthTokenDetails?
     {
         val authTokenJson = preferencesService.Get(AUTH_KEY, "")
-        if (!authTokenJson.isNullOrEmpty())
+        if (!authTokenJson.isEmpty())
         {
             return try
             {
