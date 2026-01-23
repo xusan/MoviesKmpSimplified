@@ -6,6 +6,7 @@ public class BusyIndicatorNode : ASDisplayNode
     private var activityIndicatorNode: ActivityIndicatorNode
     private var txtNode: ASTextNode
     private var rectangleNode: RectangleNode
+    
 
     public var IsShowing: Bool = false
 

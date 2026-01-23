@@ -80,3 +80,4 @@ typealias MediaFile = SharedAppCore.MediaFile
 typealias MediaSource = SharedAppCore.MediaSource
 typealias IMediaPickerService = SharedAppCore.IMediaPickerService
 public typealias XfColor = SharedAppCore.XfColor
+typealias MovieItemViewModel = SharedAppCore.MovieItemViewModel

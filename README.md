@@ -5,8 +5,6 @@ This repository reflects my approach to designing **robust, testable, and scalab
 
 **Contact:**  
 📧 Email: khasanrah@gmail.com  
-
-**Available for hire:**  
 💼 Upwork: https://www.upwork.com/freelancers/khasanr
 
 ---
@@ -26,8 +24,9 @@ The demo shows how:
 
 The goal of this project is to demonstrate my experience in creating **beautiful**, **clear**, and **maintainable** mobile applications that can **scale to large, long-living products** without architectural bottlenecks.
 
-### Other Implementations
-
+- **MoviesDemo (Flutter)**  
+  https://github.com/devperson/MoviesFlutter
+  
 - **MoviesDemo (KMP – Jetpack Compose / SwiftUI)**  
   https://github.com/xusan/movieskmpcompose
   
