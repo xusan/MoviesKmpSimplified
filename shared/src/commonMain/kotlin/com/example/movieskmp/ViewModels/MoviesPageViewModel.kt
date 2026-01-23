@@ -53,10 +53,9 @@ class MoviesPageViewModel(injectedService: PageInjectedServices) : AppPageViewMo
 
         movieCellUpdatedEvent = Services.EventAggregator.GetEvent<MovieCellItemUpdatedEvent>{ MovieCellItemUpdatedEvent() }
         authErrorEvent = Services.EventAggregator.GetEvent<AuthErrorEvent> { AuthErrorEvent() }
+
         movieCellUpdatedEvent.Subscribe(::OnMovieCellItemUpdatedEvent)
         authErrorEvent.Subscribe (::HandleAuthErrorEvent)
-
-
     }
 
     override fun Initialize(parameters: INavigationParameters)
@@ -79,15 +78,27 @@ class MoviesPageViewModel(injectedService: PageInjectedServices) : AppPageViewMo
         {
             if(parameters.ContainsKey(AddEditMoviePageViewModel.NEW_ITEM))
             {
-                val newProduct = GetParameter<MovieItemViewModel>(parameters, AddEditMoviePageViewModel.NEW_ITEM)!!
-                MovieItems.Add(0,newProduct)
+                val movieId = GetParameter<Int>(parameters, AddEditMoviePageViewModel.NEW_ITEM)!!
+                MainThreadScope.launch()
+                {
+                    try
+                    {
+                        val newMovie = GetMovieFromDb(movieId)
+                        newMovie?.let { MovieItems.Add(0, it) }
+                    }
+                    catch (ex: Throwable)
+                    {
+                        Services.LoggingService.TrackError(ex)
+                    }
+                }
             }
             else if(parameters.ContainsKey(AddEditMoviePageViewModel.REMOVE_ITEM))
             {
-                val removedItem = GetParameter<MovieItemViewModel>(parameters, AddEditMoviePageViewModel.REMOVE_ITEM)
-                if(removedItem != null)
+                val removeId = GetParameter<Int>(parameters, AddEditMoviePageViewModel.REMOVE_ITEM)
+                val oldMovie = MovieItems.Items.firstOrNull { item -> item.Id == removeId }
+                if(oldMovie != null)
                 {
-                    MovieItems.Remove(removedItem);
+                    MovieItems.Remove(oldMovie);
                 }
             }
         }
@@ -170,9 +181,9 @@ class MoviesPageViewModel(injectedService: PageInjectedServices) : AppPageViewMo
         {
             LogMethodStart(::OnItemTappedCommand.name, arg)
             val item = arg as? MovieItemViewModel ?: return
-            Navigate(MovieDetailPageViewModel::class.simpleName!!,NavigationParameters
+            Navigate(MovieDetailPageViewModel::class.simpleName!!, NavigationParameters
                 {
-                    add(SELECTED_ITEM, item)
+                    add(SELECTED_ITEM, item.Id)
                 })
         }
         catch (ex: Throwable)
@@ -221,15 +232,19 @@ class MoviesPageViewModel(injectedService: PageInjectedServices) : AppPageViewMo
         {
             try
             {
-                val movieItem = model as MovieItemViewModel;
-
-                val oldItem = MovieItems.Items.firstOrNull { it.Id == movieItem.Id }
-                oldItem?.let()
+                //update item in the list
+                val movieId = model as Int;
+                val updatedMovie = GetMovieFromDb(movieId)
+                updatedMovie?.let()
                 {
-                    val index = MovieItems.Items.indexOf(it)
-                    if (index >= 0)
+                    val oldItem = MovieItems.Items.firstOrNull { it.Id == movieId }
+                    oldItem?.let()
                     {
-                        MovieItems.Replace(index, movieItem)
+                        val index = MovieItems.Items.indexOf(it)
+                        if (index >= 0)
+                        {
+                            MovieItems.Replace(index, updatedMovie)
+                        }
                     }
                 }
             }
@@ -317,6 +332,21 @@ class MoviesPageViewModel(injectedService: PageInjectedServices) : AppPageViewMo
                 else
                     loggingService.TrackError(it)
             }
+        }
+    }
+
+    suspend fun GetMovieFromDb(movieId: Int): MovieItemViewModel?
+    {
+        val result = movieService.GetById(movieId)
+        if(result.Success)
+        {
+            val movieItemViewModel = MovieItemViewModel(result.ValueOrThrow)
+            return movieItemViewModel
+        }
+        else
+        {
+            Services.LoggingService.LogWarning("MovieService.GetById() failed to get record from db");
+            return null
         }
     }
 

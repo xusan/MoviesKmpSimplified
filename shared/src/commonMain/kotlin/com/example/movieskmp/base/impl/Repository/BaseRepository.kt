@@ -106,14 +106,14 @@ where TEntity : IEntity, Tb : RealmObject, Tb: ITable
     }
 
     /** Delete by id */
-    override suspend fun RemoveAsync(entity: TEntity) : Int
+    override suspend fun RemoveAsync(entityId: Int) : Int
     {
-        LogMethodStart(::RemoveAsync.name, entity)
+        LogMethodStart(::RemoveAsync.name, entityId)
         EnsureInitalized()
         var hasValue = false;
         realm!!.write() //we can call with !! because we have EnsureInitalized() check
         {
-            val tb = query(tableClass, "Id == $0", entity.Id).first().find()
+            val tb = query(tableClass, "Id == $0", entityId).first().find()
             if (tb != null)
             {
                 hasValue = true;

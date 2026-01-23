@@ -93,7 +93,7 @@ internal class MoviesService : LoggableService(), IMovieService
         }
     }
 
-    override suspend fun UpdateAsync(dtoModel: MovieDto): Some<MovieDto>
+    override suspend fun UpdateAsync(dtoModel: MovieDto): Some<Int>
     {
         try
         {
@@ -102,7 +102,7 @@ internal class MoviesService : LoggableService(), IMovieService
             val movie = dtoModel.ToEntity<Movie>();
             this.movieRepository.UpdateAsync(movie);
 
-            return Some.FromValue(dtoModel);
+            return Some.FromValue(dtoModel.Id);
         }
         catch (ex: Throwable)
         {
@@ -110,14 +110,12 @@ internal class MoviesService : LoggableService(), IMovieService
         }
     }
 
-    override suspend fun RemoveAsync(dtoModel: MovieDto): Some<Int>
+    override suspend fun RemoveAsync(dtoId: Int): Some<Int>
     {
         try
         {
-            LogMethodStart(::RemoveAsync.name, dtoModel);
-
-            val movie = dtoModel.ToEntity<Movie>();
-            val res = this.movieRepository.RemoveAsync(movie);
+            LogMethodStart(::RemoveAsync.name, dtoId);
+            val res = this.movieRepository.RemoveAsync(dtoId);
 
             return Some.FromValue(res);
         }
