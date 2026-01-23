@@ -174,6 +174,36 @@ The project includes a comprehensive test suite:
 
 ---
 
+## Logging & Diagnostics
+
+This project is extensively instrumented with structured logging across all layers of the application to simplify debugging, troubleshooting, and long-term maintenance.
+In addition to standard custom logs (warnings, errors, and important state changes), almost every public method is automatically traced using **LogMethod**, providing fine-grained visibility into application flow.
+
+### Key Characteristics
+
+- **Cross-layer instrumentation**  
+  Logging is enabled consistently across:
+  - **UI**
+  - **ViewModels**
+  - **Services**
+  - **Domain**
+
+- **Automatic method tracing (`LogMethod`)**  
+  Nearly all public methods are traced automatically:
+  - Method entry only
+  - Execution order across layers  
+  - Parameter values (when relevant)  
+
+  This makes it possible to follow a single request from UI down to infrastructure and back.
+
+- **User action breadcrumbs (`"Command"`)**  
+  All user-initiated actions are logged with the `"Command"` keyword:
+  - Allows filtering logs by user steps  
+  - Reconstructs full user flows (breadcrumbs)  
+  - Makes production issue reports reproducible  
+
+---
+
 ## Dependencies (KMP)
 
 ### Shared (Kotlin Multiplatform)
