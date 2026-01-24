@@ -69,7 +69,7 @@ class MovieDetailPage : iOSLifecyclePage
         txtDescription.style.flexGrow = 1
         txtDescription.style.flexShrink = 1
 
-        ShowData()
+        SetData()
     }
     
     override func LayoutSpecOverride(node: ASDisplayNode, constrainedSize: ASSizeRange) -> ASLayoutSpec
@@ -147,27 +147,13 @@ class MovieDetailPage : iOSLifecyclePage
         }
         else if propertyName == "Model"
         {
-            ShowData()
+            SetData()
         }
     }
     
-    func hederLeftBtnNode_TouchUp(node: BaseControlNode?)
+    func SetData()
     {
-        self.OnBackBtnPressed()
-    }
-    
-    func headerRightBtnNode_TouchUp(btn: BaseControlNode?)
-    {
-        vm.EditCommand.Execute()
-    }
-
-
-    func ShowData()
-    {
-        if let model = vm.Model
-        {
-            imgNode.SetSrc(model.PosterUrl)
-        }
+        imgNode.SetSrc(vm.Model?.PosterUrl)
 
         txtName.attributedText = NSAttributedString(
             string: vm.Model?.Name ?? "",
@@ -184,5 +170,15 @@ class MovieDetailPage : iOSLifecyclePage
                 .foregroundColor: ColorConstants.LabelColor.ToUIColor()
             ]
         )
+    }
+    
+    func hederLeftBtnNode_TouchUp(node: BaseControlNode?)
+    {
+        self.OnBackBtnPressed()
+    }
+    
+    func headerRightBtnNode_TouchUp(btn: BaseControlNode?)
+    {
+        vm.EditCommand.Execute()
     }
 }
