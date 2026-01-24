@@ -1,5 +1,6 @@
 package com.app.shared.ViewModels
 
+import com.app.abstraction.domain.Movie
 import com.app.abstraction.main.AppService.Dto.MovieDto
 import com.app.shared.Base.AppPageViewModel
 import com.app.shared.Base.PageInjectedServices
@@ -12,13 +13,15 @@ import com.base.mvvm.Helpers.CommonStrings
 import com.base.mvvm.Navigation.INavigationParameters
 import com.base.mvvm.Navigation.NavigationParameters
 import com.example.movieskmp.domain.AppServices.IMovieService
+import io.ktor.client.utils.unwrapCancellationException
+import kotlinx.coroutines.launch
 import org.koin.core.component.inject
 import kotlin.experimental.ExperimentalObjCName
 import kotlin.native.ObjCName
 
 @OptIn(ExperimentalObjCName::class)
 @ObjCName(name = "AddEditMoviePageViewModel", exact = true)//We need it to generate an exact name like AddEditMoviePageViewModel. By default, it will generate SACAddEditMoviePageViewModel and this can cause issue for navigation as the page is registered for the "AddEditMoviePageViewModel" key
-class AddEditMoviePageViewModel(injectedService: PageInjectedServices) : AppPageViewModel(injectedService)
+class AddEditMoviePageViewModel(injectedService: PageInjectedServices) : MovieDetailPageViewModel(injectedService)
 {
     companion object
     {
@@ -28,17 +31,17 @@ class AddEditMoviePageViewModel(injectedService: PageInjectedServices) : AppPage
         const val PhotoChangedEvent: String = "PhotoChanged";
     }
 
-    private val movieService: IMovieService by inject()
+    //private val movieService: IMovieService by inject()
     private val mediaPickerService: IMediaPickerService by inject()
 
     var SaveCommand: AsyncCommand;
     var ChangePhotoCommand: AsyncCommand;
     var DeleteCommand: AsyncCommand;
-    var Model: MovieItemViewModel? = null
-        set(value)
-        {
-            SetProperty(::Model.name, field, value) { field = it }
-        }
+//    var Model: MovieItemViewModel? = null
+//        set(value)
+//        {
+//            SetProperty(::Model.name, field, value) { field = it }
+//        }
     var IsEdit: Boolean = false
         set(value)
         {
@@ -60,14 +63,20 @@ class AddEditMoviePageViewModel(injectedService: PageInjectedServices) : AppPage
         if (parameters.ContainsKey(MoviesPageViewModel.SELECTED_ITEM))
         {
             this.IsEdit = true;
-            this.Model = parameters.GetValue<MovieItemViewModel>(MoviesPageViewModel.SELECTED_ITEM);
             this.Title = "Edit";
+            val movieId = parameters.GetValue<Int>(MoviesPageViewModel.SELECTED_ITEM)!!;
+            MainThreadScope.launch { LoadMovie(movieId) }
         }
         else
         {
             this.Model = MovieItemViewModel()
             this.Title = "Add new"
         }
+    }
+
+    override fun OnNavigatedTo(parameters: INavigationParameters)
+    {
+        //keep empty to override base one
     }
 
     suspend fun OnChangePhotoCommand(arg: Any?)
@@ -134,30 +143,39 @@ class AddEditMoviePageViewModel(injectedService: PageInjectedServices) : AppPage
                 return;
             }
 
-            var result: Some<MovieDto>? = null;
+            var success = false
+            var movieId = 0
+            var error: Throwable? = null
             if (this.IsEdit)
             {
                 //TODO use mapper
                 val dtoModel = Model?.ToDto()!!
-                result = movieService.UpdateAsync(dtoModel);
+                val result = movieService.UpdateAsync(dtoModel);
+                success = result.Success
+                movieId = Model!!.Id
+                error = result.Exception
             }
             else
             {
-                result = movieService.AddAsync(this.Model?.Name!!, this.Model?.Overview!!, this.Model?.PosterUrl);
+                val result = movieService.AddAsync(this.Model?.Name!!, this.Model?.Overview!!, this.Model?.PosterUrl);
+                success = result.Success
+                movieId = result.ValueOrThrow.Id
+                error = result.Exception
             }
 
-            if (result.Success)
+            if (success)
             {
-                val item = MovieItemViewModel(result.ValueOrThrow);
                 val key = if(this.IsEdit) UPDATE_ITEM else NEW_ITEM;
                 NavigateBack(NavigationParameters()
                 {
-                    add(key, item)
+                    add(key, movieId)
                 });
             }
             else
             {
-                Services.SnackBarService.ShowError(CommonStrings.GeneralError);
+                error?.let {
+                    HandleUIError(it)
+                }
             }
 
         }
@@ -177,19 +195,18 @@ class AddEditMoviePageViewModel(injectedService: PageInjectedServices) : AppPage
 
             if (res == true)
             {
-                val dtoModel = Model?.ToDto()!!;
-                val result = movieService.RemoveAsync(dtoModel);
+                val result = movieService.RemoveAsync(this.Model!!.Id);
 
                 if (result.Success)
                 {
                     NavigateToRoot(NavigationParameters()
                     {
-                        add(REMOVE_ITEM, Model)
+                        add(REMOVE_ITEM, Model!!.Id)
                     });
                 }
                 else
                 {
-                    Services.SnackBarService.ShowError(CommonStrings.GeneralError);
+                    result.Exception?.let { HandleUIError(it) }
                 }
             }
         }

@@ -30,7 +30,9 @@ class MovieDetailPage : DroidLifecyclePage()
 
         binding.apply {
 
-            OnModelUpdated()
+            viewModel.Model?.let {
+                OnModelUpdated()
+            }
 
             btnEdit.setOnClickListener {
                 viewModel.EditCommand.Execute(null)

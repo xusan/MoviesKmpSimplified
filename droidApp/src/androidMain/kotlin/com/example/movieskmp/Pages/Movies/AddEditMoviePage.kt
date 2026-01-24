@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.core.widget.addTextChangedListener
 import com.app.shared.ViewModels.AddEditMoviePageViewModel
 import com.base.impl.Droid.Utils.ToVisibility
@@ -28,12 +27,9 @@ class AddEditMoviePage : DroidLifecyclePage()
 
         binding.apply {
 
-            txtTitle.setText(viewModel.Title);
-            txtName.setText(viewModel.Model?.Name)
-            txtDescription.setText(viewModel.Model?.Overview);
-            btnDelete.visibility = viewModel.IsEdit.ToVisibility();
-
-            OnPhotoChanged()
+            viewModel.Model?.let {
+                ShowData(binding)
+            }
 
             txtName.addTextChangedListener {
                 viewModel.Model?.Name = txtName.text.toString()
@@ -77,6 +73,10 @@ class AddEditMoviePage : DroidLifecyclePage()
         {
             OnPhotoChanged()
         }
+        else if(propertyName == viewModel::Model.name)
+        {
+            ShowData(binding)
+        }
     }
 
     private fun OnPhotoChanged()
@@ -99,5 +99,15 @@ class AddEditMoviePage : DroidLifecyclePage()
     {
         super.onDestroyView()
         _binding = null // avoid memory leaks
+    }
+
+    private fun ShowData(binding: PageMovieAddEditBinding)
+    {
+        binding.txtTitle.setText(viewModel.Title);
+        binding.txtName.setText(viewModel.Model?.Name)
+        binding.txtDescription.setText(viewModel.Model?.Overview);
+        binding.btnDelete.visibility = viewModel.IsEdit.ToVisibility();
+
+        OnPhotoChanged()
     }
 }

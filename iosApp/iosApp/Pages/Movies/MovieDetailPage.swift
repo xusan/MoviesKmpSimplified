@@ -25,21 +25,6 @@ class MovieDetailPage : iOSLifecyclePage
 
         // MARK: - Image
         imgNode = AsSdImageNode()
-        if let model = vm.Model, let imgPath = model.PosterUrl
-        {
-            if imgPath.isLocalFilePath()
-            {
-                imgNode.filePath = imgPath
-            }
-            else
-            {
-                imgNode.url = imgPath
-            }
-        }
-        else
-        {
-            imgNode.Clear()
-        }
         imgNode.style.preferredLayoutSize = ASLayoutSize(
             width: ASDimension(unit: .points, value: 200),
             height: ASDimension(unit: .points, value: 300)
@@ -64,13 +49,7 @@ class MovieDetailPage : iOSLifecyclePage
         txtName = ASTextNode()
         txtName.style.flexGrow = 1
         txtName.style.flexShrink = 1
-        txtName.attributedText = NSAttributedString(
-            string: vm.Model?.Name ?? "",
-            attributes: [
-                .font: UIFont(name: "Sen-SemiBold", size: 15)!,
-                .foregroundColor: ColorConstants.LabelColor.ToUIColor()
-            ]
-        )
+
 
         // MARK: - Description Label
         lblDescription = ASTextNode()
@@ -89,13 +68,8 @@ class MovieDetailPage : iOSLifecyclePage
         txtDescription.truncationMode = .byWordWrapping
         txtDescription.style.flexGrow = 1
         txtDescription.style.flexShrink = 1
-        txtDescription.attributedText = NSAttributedString(
-            string: vm.Model?.Overview ?? "",
-            attributes: [
-                .font: UIFont(name: "Sen-Medium", size: 15)!,
-                .foregroundColor: ColorConstants.LabelColor.ToUIColor()
-            ]
-        )
+
+        ShowData()
     }
     
     override func LayoutSpecOverride(node: ASDisplayNode, constrainedSize: ASSizeRange) -> ASLayoutSpec
@@ -171,6 +145,10 @@ class MovieDetailPage : iOSLifecyclePage
             self.node.setNeedsLayout()
             self.node.layoutIfNeeded()
         }
+        else if propertyName == "Model"
+        {
+            ShowData()
+        }
     }
     
     func hederLeftBtnNode_TouchUp(node: BaseControlNode?)
@@ -181,5 +159,41 @@ class MovieDetailPage : iOSLifecyclePage
     func headerRightBtnNode_TouchUp(btn: BaseControlNode?)
     {
         vm.EditCommand.Execute()
+    }
+
+
+    func ShowData()
+    {
+        if let model = vm.Model, let imgPath = model.PosterUrl
+        {
+            if imgPath.isLocalFilePath()
+            {
+                imgNode.filePath = imgPath
+            }
+            else
+            {
+                imgNode.url = imgPath
+            }
+        }
+        else
+        {
+            imgNode.Clear()
+        }
+
+        txtName.attributedText = NSAttributedString(
+            string: vm.Model?.Name ?? "",
+            attributes: [
+                .font: UIFont(name: "Sen-SemiBold", size: 15)!,
+                .foregroundColor: ColorConstants.LabelColor.ToUIColor()
+            ]
+        )
+
+        txtDescription.attributedText = NSAttributedString(
+            string: vm.Model?.Overview ?? "",
+            attributes: [
+                .font: UIFont(name: "Sen-Medium", size: 15)!,
+                .foregroundColor: ColorConstants.LabelColor.ToUIColor()
+            ]
+        )
     }
 }

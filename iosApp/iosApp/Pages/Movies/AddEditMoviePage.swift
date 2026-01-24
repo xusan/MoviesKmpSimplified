@@ -47,17 +47,6 @@ class AddEditMoviePage : iOSLifecyclePage
 
         // --- Image ---
         imgNode = AsSdImageNode()
-        if let model = vm.Model, let imgPath = model.PosterUrl
-        {
-            if imgPath.isLocalFilePath()
-            {
-                imgNode.filePath = imgPath
-            }
-            else
-            {
-                imgNode.url = imgPath
-            }
-        }        
         imgNode.style.preferredLayoutSize = ASLayoutSize(
             width: ASDimension(unit: .points, value: 200),
             height: ASDimension(unit: .points, value: 300)
@@ -80,7 +69,6 @@ class AddEditMoviePage : iOSLifecyclePage
 
         // --- Name Value ---
         txtName = ASEditTextNode()
-        txtName.TextField.text = vm.Model?.Name
         txtName.style.flexGrow = 1
         txtName.style.flexShrink = 1
         txtName.TextField.addTarget(self, action: #selector(txtName_EditingChanged), for: .editingChanged)
@@ -98,7 +86,6 @@ class AddEditMoviePage : iOSLifecyclePage
 
         // --- Description Value ---
         txtDescription = ASEditTextMultilineNode()
-        txtDescription.textView.text = vm.Model?.Overview
         txtDescription.style.flexGrow = 1
         //txtDescription.style.maxHeight = ASDimension(unit: .points, value: 200)
         txtDescription.TextChanged.AddListener(listener_: txtDescription_EditingChanged)
@@ -116,6 +103,27 @@ class AddEditMoviePage : iOSLifecyclePage
         }
         
         keyboardViewResize = KeyboardViewResize(page: self, scrollNode: scrollNode, resize: false)
+
+        ShowData()
+    }
+
+    func ShowData()
+    {
+        if let model = vm.Model, let imgPath = model.PosterUrl
+            {
+            if imgPath.isLocalFilePath()
+                {
+                imgNode.filePath = imgPath
+            }
+            else
+                {
+                imgNode.url = imgPath
+            }
+        }
+
+        txtName.TextField.text = vm.Model?.Name
+        txtDescription.textView.text = vm.Model?.Overview
+
     }
     
     //Get layout that inside scroll view
@@ -198,6 +206,10 @@ class AddEditMoviePage : iOSLifecyclePage
         if propertyName == AddEditMoviePageViewModel.companion.PhotoChangedEvent
         {
             OnPhotoChanged()
+        }
+        else if propertyName == "Model"
+        {
+            ShowData()
         }
     }
     
