@@ -20,9 +20,31 @@ public class AsSdImageNode: ASDisplayNode
         imageNode.clipsToBounds = true
     }
 
-    public override func didLoad() {
+    public override func didLoad()
+    {
         super.didLoad()
         Refresh()
+    }
+    
+    public func SetSrc(_ src: String?)
+    {
+        if let imgPath = src
+        {
+            if imgPath.isLocalFilePath()
+            {
+                filePath = imgPath
+            }
+            else
+            {
+                url = imgPath
+            }
+            
+            Refresh()
+        }
+        else
+        {
+            Clear()
+        }
     }
 
     public func Refresh()

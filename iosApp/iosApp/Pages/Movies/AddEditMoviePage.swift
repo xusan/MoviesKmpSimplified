@@ -109,16 +109,9 @@ class AddEditMoviePage : iOSLifecyclePage
 
     func ShowData()
     {
-        if let model = vm.Model, let imgPath = model.PosterUrl
-            {
-            if imgPath.isLocalFilePath()
-                {
-                imgNode.filePath = imgPath
-            }
-            else
-                {
-                imgNode.url = imgPath
-            }
+        if let model = vm.Model
+        {
+            imgNode.SetSrc(model.PosterUrl)
         }
 
         txtName.TextField.text = vm.Model?.Name

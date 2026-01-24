@@ -164,20 +164,9 @@ class MovieDetailPage : iOSLifecyclePage
 
     func ShowData()
     {
-        if let model = vm.Model, let imgPath = model.PosterUrl
+        if let model = vm.Model
         {
-            if imgPath.isLocalFilePath()
-            {
-                imgNode.filePath = imgPath
-            }
-            else
-            {
-                imgNode.url = imgPath
-            }
-        }
-        else
-        {
-            imgNode.Clear()
+            imgNode.SetSrc(model.PosterUrl)
         }
 
         txtName.attributedText = NSAttributedString(
