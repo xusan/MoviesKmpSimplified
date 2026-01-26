@@ -104,26 +104,7 @@ class AddEditMoviePage : iOSLifecyclePage
         
         keyboardViewResize = KeyboardViewResize(page: self, scrollNode: scrollNode, resize: false)
 
-        ShowData()
-    }
-
-    func ShowData()
-    {
-        if let model = vm.Model, let imgPath = model.PosterUrl
-            {
-            if imgPath.isLocalFilePath()
-                {
-                imgNode.filePath = imgPath
-            }
-            else
-                {
-                imgNode.url = imgPath
-            }
-        }
-
-        txtName.TextField.text = vm.Model?.Name
-        txtDescription.textView.text = vm.Model?.Overview
-
+        SetData()
     }
     
     //Get layout that inside scroll view
@@ -209,7 +190,7 @@ class AddEditMoviePage : iOSLifecyclePage
         }
         else if propertyName == "Model"
         {
-            ShowData()
+            SetData()
         }
     }
     
@@ -217,6 +198,13 @@ class AddEditMoviePage : iOSLifecyclePage
     {
         super.Destroy()
         keyboardViewResize.Destroy()
+    }
+    
+    func SetData()
+    {
+        imgNode.SetSrc(vm.Model?.PosterUrl)
+        txtName.TextField.text = vm.Model?.Name
+        txtDescription.textView.text = vm.Model?.Overview
     }
     
     func hederLeftBtnNode_TouchUp(node: BaseControlNode?)
