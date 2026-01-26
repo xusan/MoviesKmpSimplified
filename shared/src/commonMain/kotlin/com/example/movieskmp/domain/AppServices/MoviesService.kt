@@ -75,7 +75,7 @@ internal class MoviesService : LoggableService(), IMovieService
         }
     }
 
-    override suspend fun AddAsync(name: String, overview: String, posterUrl: String?): Some<MovieDto>
+    override suspend fun AddAsync(name: String, overview: String, posterUrl: String?): Some<Int>
     {
         try
         {
@@ -84,8 +84,7 @@ internal class MoviesService : LoggableService(), IMovieService
             val movie = Movie.Create(name, overview, posterUrl);
             this.movieRepository.AddAsync(movie);
 
-            val dtoMovie = movie.ToDto<MovieDto>();
-            return Some.FromValue(dtoMovie);
+            return Some.FromValue(movie.Id);
         }
         catch (ex: Throwable)
         {

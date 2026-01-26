@@ -68,8 +68,7 @@ open class DiViewModel : KoinTest
         val someMovies = Some.FromValue(movies)
         coEvery { mockMovieService.GetListAsync(-1,0, false) } returns someMovies
         coEvery { mockMovieService.GetListAsync(-1,0, true) } returns someMovies
-        val newMovie = MovieDto(Id = 1, Name = "Test movie1", Overview = "test overview1", PosterUrl = "")
-        coEvery { mockMovieService.AddAsync("Test movie1","test overview1", "") } returns Some.FromValue(newMovie)
+        coEvery { mockMovieService.AddAsync("Test movie1","test overview1", "") } returns Some.FromValue(1)
         //mock prefrences
         every { mockPreference.Get("AppLaunchCount", 0) } returns 0
 

@@ -56,7 +56,7 @@ class MovieServiceTest : DiAppServiceTest()
         assertTrue(result.Success, "IMoviesService.GetById() failed in T1_3UpdateMovieTest()");
 
         val item = result.ValueOrThrow;
-        val removeResult = movieService.RemoveAsync(item);
+        val removeResult = movieService.RemoveAsync(item.Id);
         assertTrue(removeResult.Success, "IMoviesService.RemoveAsync() failed in T1_3RemoveMovieTest()");
     }
 }
