@@ -14,17 +14,24 @@ import android.widget.TextView
 import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import com.base.impl.ContainerLocator
 import com.base.impl.Droid.Utils.CurrentActivity
 import com.base.impl.Droid.Utils.ToVisibility
+import com.base.mvvm.Navigation.IPage
 import com.base.mvvm.Navigation.IPageNavigationService
+import com.base.mvvm.ViewModels.PageViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.math.max
 
-open class DroidLifecyclePage : DroidBasePage(), OnApplyWindowInsetsListener {
+open class DroidLifecyclePage : DroidBasePage(), OnApplyWindowInsetsListener
+{
     protected var txtTitle: TextView? = null
     protected var btnBack: Button? = null
     private var isVisible = false
@@ -43,7 +50,8 @@ open class DroidLifecyclePage : DroidBasePage(), OnApplyWindowInsetsListener {
 
     var IsPageEnterAnimationCompleted: Boolean = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
 
         loggingService.Log("${javaClass.simpleName}.OnCreate() (from base)")
@@ -189,6 +197,9 @@ open class DroidLifecyclePage : DroidBasePage(), OnApplyWindowInsetsListener {
         loggingService.Log("${javaClass.simpleName}.OnSaveInstanceState() (from base)")
 
         super.onSaveInstanceState(outState)
+
+        outState.putInt("someId", 5)
+        outState.putString("vmId", ViewModel.InstanceId)
     }
 
     //#region Lifecycle Events
@@ -235,6 +246,33 @@ open class DroidLifecyclePage : DroidBasePage(), OnApplyWindowInsetsListener {
                 delay(600)
                 ViewModel?.OnAppeared()
                 OnViewAppeared()
+            }
+        }
+    }
+
+    //Awaits until onResume is called for this fragment.
+    //This method helps to any external caller to know that Fragment is completely appeared in screen
+    suspend fun AwaitResumed()
+    {
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return
+
+        suspendCancellableCoroutine<Unit>()
+        { cont ->
+            val observer = object : DefaultLifecycleObserver
+            {
+                override fun onResume(owner: LifecycleOwner)
+                {
+                    lifecycle.removeObserver(this)
+                    cont.resume(Unit)
+                    { cause, _, _ ->
+                        loggingService.LogWarning("${javaClass.simpleName}.AwaitResumed() canceled for this fragment")
+                    }
+                }
+            }
+            lifecycle.addObserver(observer)
+            cont.invokeOnCancellation()
+            {
+                lifecycle.removeObserver(observer)
             }
         }
     }

@@ -2,19 +2,26 @@ package com.example.movieskmp
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.base.abstractions.Diagnostic.IConditionalLogging
 import com.base.abstractions.Diagnostic.ILoggingService
+import com.base.abstractions.Diagnostic.SpecificLoggingKeys
+import com.base.abstractions.Essentials.IMediaPickerService
 import com.base.impl.ContainerLocator
-import com.base.impl.Droid.Utils.CurrentActivity
+import com.base.impl.Droid.Essentials.IActivityMediaPicker
+import com.base.mvvm.Droid.Navigation.DroidPageNavigationFrameLayout
 import com.base.mvvm.Droid.Navigation.Pages.DroidLifecyclePage
 import com.base.mvvm.Navigation.IPageNavigationService
 import com.base.mvvm.ViewModels.PageViewModel
 import kotlinx.coroutines.launch
 import com.example.movieskmp.Controls.MainSideSheetDialog
+import com.example.movieskmp.base.mvvm.Navigation.INavUiSynchronizer
 import com.example.movieskmp.databinding.ActivityMainBinding
 import java.util.Locale
 
@@ -26,7 +33,6 @@ class MainActivity : AppCompatActivity()
     private lateinit var loggingService: ILoggingService
     private var sideSheetDialog: MainSideSheetDialog? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?)
     {
         //enableEdgeToEdge()
@@ -36,24 +42,44 @@ class MainActivity : AppCompatActivity()
         val view = binding.root
         setContentView(view)
 
-        val bootstrap = Bootstrap(this)
+        SetupCustomServices()
 
-        binding.apply {
-            pageNavigationService = navContainer
-            bootstrap.RegisterTypes(pageNavigationService)
-        }
-
-        loggingService = ContainerLocator.Resolve<ILoggingService>()
-        this.loggingService.Log("####################################################- APPLICATION STARTED -####################################################");
-        this.loggingService.Log("MainActivity.OnCreate()");
-
-        lifecycleScope.launch() {
-            bootstrap.NavigateToPageAsync(pageNavigationService);
+        //navigate to first page (if it is not restoring state)
+        if(savedInstanceState == null)
+        {
+            lifecycleScope.launch()
+            {
+                //navigate to root page
+                val bootstrap = ContainerLocator.Resolve<Bootstrap>()
+                bootstrap.NavigateToRootAsync();
+            }
         }
 
         window.setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
         )
+    }
+
+    private fun SetupCustomServices()
+    {
+        loggingService = ContainerLocator.Resolve<ILoggingService>()
+        //add nav frame layout to root view
+        pageNavigationService = ContainerLocator.Resolve<IPageNavigationService>()
+
+        val navSyncService = ContainerLocator.Resolve<INavUiSynchronizer>()
+        val navFrameLayout = pageNavigationService as DroidPageNavigationFrameLayout
+        navFrameLayout.id = R.id.navContainer
+        navFrameLayout.Initialize()
+        navFrameLayout.AttachTo(binding.layoutRoot)
+        //sync the nav stack
+        navSyncService.SyncWithNavigationState()
+
+        //Media picker should be inited before onResume()
+        val mediaPickerService = ContainerLocator.Resolve<IMediaPickerService>()
+        (mediaPickerService as IActivityMediaPicker).Initilize(this)
+        Handler(Looper.getMainLooper()).post {
+            (mediaPickerService as IConditionalLogging).InitSpecificlogger(SpecificLoggingKeys.LogEssentialServices)
+        }
     }
 
     // when user click on page we should hide keyboard

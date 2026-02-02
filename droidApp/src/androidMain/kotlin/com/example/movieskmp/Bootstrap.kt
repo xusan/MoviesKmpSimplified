@@ -1,5 +1,6 @@
 package com.example.movieskmp
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import com.app.shared.Base.PageInjectedServices
 import com.app.shared.ViewModels.*
@@ -8,6 +9,7 @@ import com.base.abstractions.Essentials.IPreferences
 import com.base.abstractions.IConstant
 import com.base.impl.ContainerLocator
 import com.base.impl.Droid.Utils.CurrentActivity
+import com.base.mvvm.Droid.Navigation.DroidPageNavigationFrameLayout
 import com.base.mvvm.Navigation.IPageNavigationService
 import com.base.mvvm.Navigation.NavRegistrar
 import org.koin.core.component.KoinComponent
@@ -16,25 +18,28 @@ import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import com.example.movieskmp.Pages.Login.*
 import com.example.movieskmp.Pages.Movies.*
+import com.example.movieskmp.base.mvvm.Navigation.INavUiSynchronizer
+import com.example.movieskmp.base.mvvm.Navigation.IViewModelProvider
+import net.bytebuddy.implementation.Implementation
 
 class Bootstrap : KoinComponent
 {
-    constructor(componentActivity: AppCompatActivity)
-    {
-        CurrentActivity.SetActivity(componentActivity)
-    }
-    fun RegisterTypes(pageNavigationService: IPageNavigationService)
+    fun RegisterTypes(context: Context)
     {
         val appDroidImpl = AppDroidRegistrar.RegisterTypes()
+        val pageNavigationService = DroidPageNavigationFrameLayout(context)
         val pageRegistrar = NavRegistrar()
         val appModule = module()
         {
             //app services
             single<IConstant> { ConstantImpl() }
             single<IPageNavigationService> { pageNavigationService }
+            single<IViewModelProvider> { pageNavigationService as IViewModelProvider }
+            single<INavUiSynchronizer> { pageNavigationService as INavUiSynchronizer }
             single { PageInjectedServices() }
             single<IErrorTrackingService> { MainApplication.Instance.sentryErrorTracker }
             single<NavRegistrar> { pageRegistrar }
+            single<Bootstrap> { this@Bootstrap }
         }
         //register pages
         pageRegistrar.RegisterPageForNavigation<LoginPageViewModel, LoginPage>({ LoginPage()}, { LoginPageViewModel(get())})
@@ -51,12 +56,13 @@ class Bootstrap : KoinComponent
         ContainerLocator.Container = koinApp.koin
     }
 
-    suspend fun NavigateToPageAsync(pageNavigationService: IPageNavigationService)
+    suspend fun NavigateToRootAsync()
     {
         val preference = get<IPreferences>()
+        val pageNavigationService = get<IPageNavigationService>()
         val isloggedIn = preference.Get(LoginPageViewModel.IsLoggedIn, false);
 
-        if (isloggedIn!!)
+        if (isloggedIn)
         {
             pageNavigationService.Navigate("/${MoviesPageViewModel::class.simpleName}", animated = false);
         }
