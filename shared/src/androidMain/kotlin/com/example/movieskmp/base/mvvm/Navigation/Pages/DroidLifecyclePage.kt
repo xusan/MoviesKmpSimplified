@@ -23,6 +23,7 @@ import com.base.impl.Droid.Utils.ToVisibility
 import com.base.mvvm.Navigation.IPage
 import com.base.mvvm.Navigation.IPageNavigationService
 import com.base.mvvm.ViewModels.PageViewModel
+import com.example.movieskmp.base.mvvm.Navigation.IViewModelProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -55,6 +56,14 @@ open class DroidLifecyclePage : DroidBasePage(), OnApplyWindowInsetsListener
         super.onCreate(savedInstanceState)
 
         loggingService.Log("${javaClass.simpleName}.OnCreate() (from base)")
+
+        if(savedInstanceState != null)
+        {
+            //it seems the fragment is recreated so we need to restore ViewModel
+            val vmId = savedInstanceState.getString(uniqueKeyFor("vmId"))!!
+            val viewModelProvider = ContainerLocator.Resolve<IViewModelProvider>()
+            ViewModel = viewModelProvider.FetchViewModel(vmId)!!
+        }
 
         ViewModel.PropertyChanged += this::ViewModel_PropertyChanged
     }
@@ -193,13 +202,19 @@ open class DroidLifecyclePage : DroidBasePage(), OnApplyWindowInsetsListener
         IsPageEnterAnimationCompleted = true
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
+    override fun onSaveInstanceState(outState: Bundle)
+    {
         loggingService.Log("${javaClass.simpleName}.OnSaveInstanceState() (from base)")
 
         super.onSaveInstanceState(outState)
 
-        outState.putInt("someId", 5)
-        outState.putString("vmId", ViewModel.InstanceId)
+        //save instance id so we can get it back when restore
+        outState.putString(uniqueKeyFor("vmId"), ViewModel.InstanceId)
+    }
+
+    fun uniqueKeyFor(key: String) : String
+    {
+        return "${key}_${this::class.simpleName}";
     }
 
     //#region Lifecycle Events
@@ -277,7 +292,8 @@ open class DroidLifecyclePage : DroidBasePage(), OnApplyWindowInsetsListener
         }
     }
 
-    override fun onPause() {
+    override fun onPause()
+    {
         loggingService.Log("${javaClass.simpleName}.OnPause() (from base)")
 
         isVisible = false
@@ -285,12 +301,14 @@ open class DroidLifecyclePage : DroidBasePage(), OnApplyWindowInsetsListener
         super.onPause()
     }
 
-    override fun onStop() {
+    override fun onStop()
+    {
         loggingService.Log("${javaClass.simpleName}.OnStop() (from base)")
 
         isVisible = false
-        if (IsCurrentPage()) {
-            ViewModel?.OnDisappearing()
+        if (IsCurrentPage())
+        {
+            ViewModel.OnDisappearing()
             OnViewDisappearing()
         }
 
@@ -321,7 +339,8 @@ open class DroidLifecyclePage : DroidBasePage(), OnApplyWindowInsetsListener
         }
     }
 
-    override fun onDestroy() {
+    override fun onDestroy()
+    {
         loggingService.Log("${javaClass.simpleName}.OnDestroy() (from base)")
 
         super.onDestroy()
@@ -332,9 +351,9 @@ open class DroidLifecyclePage : DroidBasePage(), OnApplyWindowInsetsListener
         }
 
         ViewModel.PropertyChanged -= this::ViewModel_PropertyChanged
-        ViewModel?.Destroy()
+        //Warning: do not call ViewModel.Destroy() here because
+        // viewmodel lifecycle is controlled in navigation service
     }
-    //#endregion
 
     private fun ViewModel_PropertyChanged(propertyName: String) {
         loggingService.Log("${javaClass.simpleName}.ViewModel_PropertyChanged(${propertyName})")

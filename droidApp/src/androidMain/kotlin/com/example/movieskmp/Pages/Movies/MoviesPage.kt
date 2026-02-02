@@ -21,8 +21,8 @@ class MoviesPage : DroidLifecyclePage()
 
     private var _binding: PageMoviesBinding? = null
     val binding get() = _binding!!
+    lateinit var adapter: MoviesItems_Adapter
 
-    val adapter = MoviesItems_Adapter(this)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
@@ -33,6 +33,7 @@ class MoviesPage : DroidLifecyclePage()
 
         binding.apply {
 
+            adapter = MoviesItems_Adapter(this@MoviesPage)
             recyclerView.layoutManager = listlayout
             recyclerView.adapter = adapter
             recyclerView.addItemDecoration(divider);
@@ -50,7 +51,21 @@ class MoviesPage : DroidLifecyclePage()
             }
         }
 
+        if(savedInstanceState != null)
+        {
+            //it seems that this page is re-created by android(config change), so manually re-set data to UI
+            adapter.OnCollectionSet()
+        }
+
         return binding.root
+    }
+
+    override fun onSaveInstanceState(outState: Bundle)
+    {
+        super.onSaveInstanceState(outState)
+
+        //just mock value to know that we need to restore
+        outState.putString("shouldRestore", "yes")
     }
 
     override fun OnViewModelPropertyChanged(propertyName: String)

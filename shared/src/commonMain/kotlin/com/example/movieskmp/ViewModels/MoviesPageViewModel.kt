@@ -64,10 +64,17 @@ class MoviesPageViewModel(injectedService: PageInjectedServices) : AppPageViewMo
 
         MainThreadScope.launch()
         {
-            //init infrastructure services (ie local storage, rest api)
-            infrastructureServices.Start()
-            //try to load data
-            LoadData()
+            try
+            {
+                //init infrastructure services (ie local storage, rest api)
+                infrastructureServices.Start()
+                //try to load data
+                LoadData()
+            }
+            catch (ex: Throwable)
+            {
+                Services.LoggingService.TrackError(ex)
+            }
         }
     }
 
@@ -138,6 +145,21 @@ class MoviesPageViewModel(injectedService: PageInjectedServices) : AppPageViewMo
         }
 
     }
+
+//    override fun RestoreState()
+//    {
+//        MainThreadScope.launch()
+//        {
+//            try
+//            {
+//                LoadData()
+//            }
+//            catch (ex: Throwable)
+//            {
+//                Services.LoggingService.TrackError(ex)
+//            }
+//        }
+//    }
 
     override fun Destroy()
     {

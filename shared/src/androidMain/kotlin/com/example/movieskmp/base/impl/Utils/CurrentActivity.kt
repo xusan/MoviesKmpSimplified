@@ -29,5 +29,10 @@ object CurrentActivity
         activity = null
     }
 
+    fun HasActivity(): Boolean
+    {
+        return activity != null
+    }
+
 
 }

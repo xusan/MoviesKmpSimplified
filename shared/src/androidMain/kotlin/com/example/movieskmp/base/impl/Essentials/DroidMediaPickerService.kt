@@ -43,11 +43,14 @@ internal class DroidMediaPickerService : LoggableService(), IMediaPickerService,
 
     private lateinit var activity: ComponentActivity
 
+    private var initilized = false
     //Must be called before Activity.onResume
     override fun Initilize(activity: ComponentActivity)
     {
-        if (this.activity === activity) return
+        if (initilized && this.activity === activity) return
+
         this.activity = activity
+        initilized = true
 
         fileProviderAuthority = "${activity.packageName}.media.fileprovider"
 

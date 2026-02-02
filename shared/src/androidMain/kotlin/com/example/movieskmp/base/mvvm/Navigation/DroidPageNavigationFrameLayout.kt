@@ -283,6 +283,7 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService, IVie
         //call viewmodel lifecycle methods
         currentViewModel = toShowViewModel
         popViewModel.OnNavigatedFrom(NavigationParameters())
+        popViewModel.Destroy()
         toShowViewModel.OnNavigatedTo(parameters)
 
         //hide keyboard if open
@@ -355,6 +356,7 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService, IVie
         {
             val poppedPage = fragmentFor(poppedVm)
             removeTransaction.remove(poppedPage)
+            poppedVm.Destroy()
         }
         removeTransaction.commitAllowingStateLoss()
     }
@@ -395,6 +397,7 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService, IVie
             val pageToRemove = fragmentFor(viewModelToRemove)
             navStack.remove(viewModelToRemove)
             removeTransaction.remove(pageToRemove)
+            viewModelToRemove.Destroy()
         }
 
         if (animated)
@@ -446,6 +449,7 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService, IVie
         {
             val pageToRemove = fragmentFor(vmToRemove)
             removeTransaction.remove(pageToRemove)
+            vmToRemove.Destroy()
         }
         removeTransaction.commitAllowingStateLoss()
     }
@@ -507,6 +511,7 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService, IVie
             {
                 val page = fragmentFor(vm)
                 removeTransaction.remove(page)
+                vm.Destroy()
             }
             removeTransaction.commitAllowingStateLoss()
         }
@@ -565,6 +570,7 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService, IVie
             {
                 val page = fragmentFor(vm)
                 removeTransaction.remove(page)
+                vm.Destroy()
             }
             removeTransaction.commitAllowingStateLoss()
         }

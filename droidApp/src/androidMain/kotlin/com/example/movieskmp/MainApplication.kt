@@ -47,6 +47,10 @@ class MainApplication : Application()
     }
 }
 
+
+
+//Note: Since we have single activity application we don't need to clear the ref to activity (onActivityDestroyed, onActivityStopped)
+//if activity is recreated we just replace the ref with new one
 object AppLifecycle : Application.ActivityLifecycleCallbacks
 {
 
@@ -57,37 +61,28 @@ object AppLifecycle : Application.ActivityLifecycleCallbacks
 
     override fun onActivityStarted(activity: Activity)
     {
-        CurrentActivity.SetActivity(activity as AppCompatActivity)
+
     }
 
     override fun onActivityResumed(activity: Activity)
     {
-        CurrentActivity.SetActivity(activity as AppCompatActivity)
+
     }
 
     override fun onActivityPaused(activity: Activity)
     {
-        if (CurrentActivity.Instance === activity)
-        {
-            CurrentActivity.Clear()
-        }
+
     }
 
     override fun onActivityStopped(activity: Activity)
     {
-        if (CurrentActivity.Instance === activity)
-        {
-            CurrentActivity.Clear()
-        }
+
     }
 
     override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) = Unit
 
     override fun onActivityDestroyed(activity: Activity)
     {
-        if (CurrentActivity.Instance === activity)
-        {
-            CurrentActivity.Clear()
-        }
+
     }
 }

@@ -289,9 +289,6 @@ open class PageViewModel(val injectedService: InjectedService) : NavigatingBaseV
             injectedServices.LoggingService.TrackError(x);
         }
     }
-
-//    protected fun LogVirtualBaseMethod(methodName: String)
-//    {
-//        injectedServices.LoggingService.Log("${this::class.simpleName}.${methodName}() (from base)");
-//    }
 }
+
+
