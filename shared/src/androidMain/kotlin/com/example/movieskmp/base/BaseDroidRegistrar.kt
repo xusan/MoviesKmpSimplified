@@ -33,10 +33,6 @@ class BaseDroidRegistrar
         {
             fun RegisterTypes() : List<Module>
             {
-                //we need to create the instance of DroidMediaPickerService early as possible otherewise if we try to create instance later it will crash with error:
-                // java.lang.IllegalStateException: LifecycleOwner com.example.movieskmp.MainActivity@e0b40f8 is attempting to register while current state is RESUMED.
-                val mediaPickerService = DroidMediaPickerService()
-
                 val baseDroidModule = module()
                 {
                     //Essentials
@@ -47,7 +43,7 @@ class BaseDroidRegistrar
                     single<IDisplay> { DroidDisplayImplementation() }
                     single<IDirectoryService> { DroidDirectoryService() }
                     single<IEmail> { DroidEmailImplementation() }
-                    single<IMediaPickerService> { mediaPickerService }
+                    single<IMediaPickerService> { DroidMediaPickerService() }
                     single<IPreferences> { DroidPreferencesImplementation() }
                     single<IShare> { DroidShareImplementation() }
 
@@ -61,11 +57,6 @@ class BaseDroidRegistrar
                     //Diagnostic
                     single<IFileLogger> { DroidLogbackFileLogger() }
                     single<IPlatformOutput> { DroidConsoleOutput() }
-                }
-
-                //we have to delay mediaPickerService initialization
-                Handler(Looper.getMainLooper()).post {
-                    mediaPickerService.InitSpecificlogger(SpecificLoggingKeys.LogEssentialServices)
                 }
 
                 val baseCrossModule = BaseCommonRegistrar.RegisterTypes()

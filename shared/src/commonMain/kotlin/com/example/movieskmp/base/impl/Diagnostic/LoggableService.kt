@@ -1,5 +1,6 @@
 package com.base.impl.Diagnostic
 
+import com.base.abstractions.Diagnostic.IConditionalLogging
 import com.base.abstractions.Diagnostic.ILogging
 import com.base.abstractions.Diagnostic.ILoggingService
 import com.base.abstractions.Diagnostic.SpecificLoggingKeys
@@ -7,7 +8,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.component.inject
 
-open class LoggableService : KoinComponent
+open class LoggableService : KoinComponent, IConditionalLogging
 {
     val loggingService: ILoggingService by inject()
     lateinit var specificLogger: ILogging
@@ -27,7 +28,7 @@ open class LoggableService : KoinComponent
         }
     }
 
-    fun InitSpecificlogger(key: String)
+    override fun InitSpecificlogger(key: String)
     {
         if(specificLoggerInitialized == false)
         {
@@ -36,7 +37,7 @@ open class LoggableService : KoinComponent
         }
     }
 
-    fun SpecificLogMethodStart(methodName: String, vararg args: Any? )
+    override fun SpecificLogMethodStart(methodName: String, vararg args: Any? )
     {
         try
         {

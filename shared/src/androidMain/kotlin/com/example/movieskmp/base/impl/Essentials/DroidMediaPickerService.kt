@@ -31,19 +31,24 @@ import java.util.Locale
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-internal class DroidMediaPickerService : LoggableService(), IMediaPickerService
+internal class DroidMediaPickerService : LoggableService(), IMediaPickerService, IActivityMediaPicker
 {
-    private var activity: ComponentActivity
-    private var fileProviderAuthority: String
+
+    private lateinit var fileProviderAuthority: String
     private var pending: CompletableDeferred<Uri?>? = null
     private var cameraOutputUri: Uri? = null
 
     private var getContentLauncher: ActivityResultLauncher<String>? = null
     private var takePictureLauncher: ActivityResultLauncher<Uri>? = null
 
-    init
+    private lateinit var activity: ComponentActivity
+
+    //Must be called before Activity.onResume
+    override fun Initilize(activity: ComponentActivity)
     {
-        activity = CurrentActivity.Instance
+        if (this.activity === activity) return
+        this.activity = activity
+
         fileProviderAuthority = "${activity.packageName}.media.fileprovider"
 
         if (!activity.lifecycle.currentState.isAtLeast(Lifecycle.State.INITIALIZED))
@@ -338,4 +343,9 @@ internal class DroidMediaPickerService : LoggableService(), IMediaPickerService
             else -> "image/*"
         }
     }
+}
+
+interface IActivityMediaPicker
+{
+    fun Initilize(activity: ComponentActivity)
 }

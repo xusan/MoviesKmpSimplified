@@ -16,12 +16,18 @@ object CurrentActivity
     fun SetActivity(componentActivity: AppCompatActivity)
     {
         activity = componentActivity;
-        AppContext = componentActivity;
+        //AppContext = componentActivity;
     }
 
     fun SetContext(context: Context)
     {
         AppContext = context
     }
+
+    fun Clear()
+    {
+        activity = null
+    }
+
 
 }

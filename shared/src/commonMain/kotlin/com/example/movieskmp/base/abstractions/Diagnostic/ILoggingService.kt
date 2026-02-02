@@ -27,6 +27,13 @@ interface ILoggingService : ILogging
     fun CreateSpecificLogger(key: String): ILogging
 }
 
+interface IConditionalLogging
+{
+    fun InitSpecificlogger(key: String)
+    fun SpecificLogMethodStart(methodName: String, vararg args: Any? )
+}
+
+//TODO: Need to be moved to impl as it contains app impl details
 object SpecificLoggingKeys
 {
     const val LogEssentialServices = "LogEssentialServices"
