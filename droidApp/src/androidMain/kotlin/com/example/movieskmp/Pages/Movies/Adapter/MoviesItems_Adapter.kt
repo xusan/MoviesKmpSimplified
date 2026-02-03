@@ -15,16 +15,13 @@ class MoviesItems_Adapter(private val page: MoviesPage) : RecyclerView.Adapter<R
 
     fun OnCollectionSet()
     {
-        if (this.page.viewModel.MovieItems != null)
+        if (collection != null)
         {
-            if (collection != null)
-            {
-                collection?.CollectionChanged -= ::Collection_CollectionChanged
-            }
-
-            collection = this.page.viewModel.MovieItems
-            collection?.CollectionChanged += ::Collection_CollectionChanged
+            collection!!.CollectionChanged -= ::Collection_CollectionChanged
         }
+
+        collection = this.page.viewModel.MovieItems
+        collection?.CollectionChanged += ::Collection_CollectionChanged
 
         this.notifyDataSetChanged()
     }
@@ -45,6 +42,11 @@ class MoviesItems_Adapter(private val page: MoviesPage) : RecyclerView.Adapter<R
         val model = this.collection!![position]
         val viewHolder = holder as MovieItem_ViewHolder
         viewHolder.SetData(model)
+    }
+
+    fun Clear()
+    {
+        collection?.CollectionChanged -= ::Collection_CollectionChanged
     }
 
     private fun Collection_CollectionChanged(arg: Change)

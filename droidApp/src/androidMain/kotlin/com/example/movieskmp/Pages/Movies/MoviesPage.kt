@@ -68,6 +68,13 @@ class MoviesPage : DroidLifecyclePage()
         outState.putString("shouldRestore", "yes")
     }
 
+    override fun onDestroy()
+    {
+        super.onDestroy()
+
+        adapter.Clear()
+    }
+
     override fun OnViewModelPropertyChanged(propertyName: String)
     {
         super.OnViewModelPropertyChanged(propertyName)

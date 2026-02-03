@@ -36,8 +36,16 @@ class SentryErrorTracking(val application: Application) : IErrorTrackingService
                             val logger = ContainerLocator.Container?.get<ILoggingService>()
                             logger?.let()
                             {
-                                // Log the error in app logs
-                                it.LogError(event.throwable!!, "", handled = false)
+                                val isHandled = event.exceptions
+                                    ?.firstOrNull()
+                                    ?.mechanism
+                                    ?.isHandled
+                                if(isHandled != null && !isHandled)
+                                {
+                                    // this is unhandled crash so logged
+                                    it.LogError(event.throwable!!, "", handled = false)
+                                }
+                                //attach logger
                                 val logBytes = runBlocking()
                                 {
                                     it.GetLastSessionLogBytes()

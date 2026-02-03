@@ -1,12 +1,15 @@
 package com.base.mvvm.Droid.Navigation
 
 import android.content.Context
+import android.graphics.pdf.PdfDocument
 import android.util.AttributeSet
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.lifecycleScope
 import com.base.abstractions.Diagnostic.ILogging
 import com.base.abstractions.Diagnostic.ILoggingService
 import com.base.abstractions.Diagnostic.SpecificLoggingKeys
@@ -25,6 +28,7 @@ import com.example.movieskmp.base.mvvm.Navigation.INavUiSynchronizer
 import com.example.movieskmp.base.mvvm.Navigation.IViewModelProvider
 import kotlinx.coroutines.delay
 import com.example.movieskmp.shared.R.*
+import kotlinx.coroutines.launch
 
 //NOTE:
 // We intentionally use commitAllowingStateLoss() when making transaction on FragmentManager.
@@ -283,7 +287,6 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService, IVie
         //call viewmodel lifecycle methods
         currentViewModel = toShowViewModel
         popViewModel.OnNavigatedFrom(NavigationParameters())
-        popViewModel.Destroy()
         toShowViewModel.OnNavigatedTo(parameters)
 
         //hide keyboard if open
@@ -299,7 +302,11 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService, IVie
         val removeTransaction = FragmentManager.beginTransaction()
         removeTransaction.remove(popPage)
         removeTransaction.commitAllowingStateLoss()
+
+        DestroyViewModels(mutableListOf(popViewModel))
     }
+
+
 
     private suspend fun OnMultiPopAsync(url: String, parameters: INavigationParameters, animated: Boolean)
     {
@@ -356,9 +363,9 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService, IVie
         {
             val poppedPage = fragmentFor(poppedVm)
             removeTransaction.remove(poppedPage)
-            poppedVm.Destroy()
         }
         removeTransaction.commitAllowingStateLoss()
+        DestroyViewModels(removedViewModels)
     }
 
     private suspend fun OnMultiPopAndPush(url: String, parameters: INavigationParameters, animated: Boolean)
@@ -391,13 +398,14 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService, IVie
         val removeTransaction = FragmentManager.beginTransaction()
         val splitedCount = url.split('/').size - 1
 
+        val viewModelsToRemove = mutableListOf<PageViewModel>()
         for (i in 1..splitedCount)
         {
-            val viewModelToRemove = navStack.last { p -> p != currentViewModel }
-            val pageToRemove = fragmentFor(viewModelToRemove)
-            navStack.remove(viewModelToRemove)
+            val vm = navStack.last { p -> p != currentViewModel }
+            val pageToRemove = fragmentFor(vm)
+            navStack.remove(vm)
             removeTransaction.remove(pageToRemove)
-            viewModelToRemove.Destroy()
+            viewModelsToRemove.add(vm)
         }
 
         if (animated)
@@ -405,6 +413,9 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService, IVie
             delay(animationDuration.toLong())
         }
         removeTransaction.commitAllowingStateLoss()
+
+        if(viewModelsToRemove.count() > 0)
+            DestroyViewModels(viewModelsToRemove)
     }
 
     private suspend fun OnPushRootAsync(url: String, parameters: INavigationParameters, animated: Boolean)
@@ -449,9 +460,9 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService, IVie
         {
             val pageToRemove = fragmentFor(vmToRemove)
             removeTransaction.remove(pageToRemove)
-            vmToRemove.Destroy()
         }
         removeTransaction.commitAllowingStateLoss()
+        DestroyViewModels(removedViewModels)
     }
 
     private suspend fun OnMultiPushRootAsync(url: String, parameters: INavigationParameters, animated: Boolean)
@@ -511,9 +522,9 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService, IVie
             {
                 val page = fragmentFor(vm)
                 removeTransaction.remove(page)
-                vm.Destroy()
             }
             removeTransaction.commitAllowingStateLoss()
+            DestroyViewModels(removedViewModels)
         }
     }
 
@@ -570,8 +581,8 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService, IVie
             {
                 val page = fragmentFor(vm)
                 removeTransaction.remove(page)
-                vm.Destroy()
             }
+            DestroyViewModels(removedViewModels)
             removeTransaction.commitAllowingStateLoss()
         }
     }
@@ -644,6 +655,29 @@ class DroidPageNavigationFrameLayout : FrameLayout, IPageNavigationService, IVie
     {
         val viewModel = navStack.firstOrNull {s-> s.InstanceId == id}
         return viewModel
+    }
+
+
+    fun DestroyViewModels(viewModels: List<PageViewModel>)
+    {
+        if(viewModels.size == 0) return
+
+        CurrentActivity.Instance.lifecycleScope.launch {
+            try
+            {
+                //add delay to make sure that all things are completed
+                //this is because navigation is started from viewModelScope
+                //and when we call viewModel.Destroy() this cancels the job of viewModelScope
+                //thus if we call it too early it will cancel the navigation
+                delay(300)
+                viewModels.forEach { viewModel -> viewModel.Destroy() }
+            }
+            catch (ex: Throwable)
+            {
+                Logger.LogError(ex)
+            }
+
+        }
     }
 
     /**
